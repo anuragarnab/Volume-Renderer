@@ -297,11 +297,6 @@ QSize glWidget::minimumSizeHint() const
 	//return QSize(IMAGEWIDTH, IMAGEHEIGHT);
 }
 
-QSize glWidget::sizeHint() const
-{
-	return QSize(256, 256);
-}
-
 /*
 *
 * Parse the config file to set up the state of the renderer

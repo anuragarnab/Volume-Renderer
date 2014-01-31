@@ -38,7 +38,6 @@ public:
 	void paintGL();
 
 	QSize minimumSizeHint() const;
-	QSize sizeHint() const;
 
 	void loadNewFile(QString filename);
 	void loadNewFile(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo);
