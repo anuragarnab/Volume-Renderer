@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<options>
+    <option id="1">
+        <name>Grayscale</name>
+        <description>Converts a 3 channel RGB image to grayscale</description>
+    </option>
+    <option id="2">
+        <name>Filter 2</name>
+        <description>Description for filter 2</description>
+    </option>
+    <option id="3">
+        <name>Brightness / Darkness</name>
+        <description>Enter a positive value to brighten the image or a negative value to darken it</description>
+        <parameters>
+            <description> Positve value to brighten, negative to darken </description>
+            <p1> Adjustment level</p1>
+        </parameters>
+    </option>
+</options>
