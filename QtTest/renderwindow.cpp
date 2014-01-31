@@ -1,11 +1,7 @@
 #include "renderwindow.h"
-//#include <QtDebug>
 #include <QDebug>
 
 #include "glWidget.h"
-
-// for Qt 4
-//#include <QRegExp>
 
 RenderWindow::RenderWindow(QWidget *parent) :
 QWidget(parent)
@@ -25,22 +21,13 @@ QWidget(parent)
 	imageView2 = new QGraphicsView(scene2);
 	imageNo = new QLabel();
 
-//	imageSelector->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//	imageNo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
 	sliderSplit = new QSplitter();
 	imageSplit = new QSplitter();
 	mainSplit = new QSplitter();
 
-//	sliderSplit->addWidget(imageSelector);
-//	sliderSplit->addWidget(imageNo);
-//	sliderSplit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	sliderLayout.addWidget(imageSelector);
+	sliderLayout.addWidget(imageNo);
 
-		sliderLayout.addWidget(imageSelector);
-		sliderLayout.addWidget(imageNo);
-
-		//imageLayout.addWidget(imageView);
-		//imageLayout.addWidget(imageView2);
 	imageSplit->addWidget(imageView);
 	imageSplit->addWidget(imageView2);
 
@@ -63,6 +50,7 @@ QWidget(parent)
 
 	//loadImages();
 	setLayout(&mainLayout);
+	setWindowTitle("Rendering window");
 }
 
 
@@ -423,6 +411,13 @@ void RenderWindow::processBrightness(int delta, QImage * image)
 
 void RenderWindow::processBlur(int kernel, QImage * image)
 {
+
+	if (kernel == 0)
+	{
+		assignImage(scene2, image);
+		return;
+	}
+
 	int matrix[5][5] = 
 	{ { 0, 0, kernel/4, 0, 0 },
 	{ 0, kernel/4, kernel/2, kernel/4, 0 },

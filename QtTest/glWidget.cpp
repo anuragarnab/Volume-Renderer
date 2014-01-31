@@ -17,7 +17,7 @@ QGLWidget(parent)
 }
 
 glWidget::glWidget(QString filename, QWidget *parent) :
-QGLWidget(parent)
+QGLWidget(parent), currentFilename(filename)
 {
 	parseOptions(filename);
 	
@@ -52,6 +52,9 @@ void glWidget::initializeGL(){
 	
 	if (!initTexturesRaw(DATAFILE)){
 		qDebug() << "Could not load texture";
+	}
+	else{
+		lastGoodFilename = currentFilename;
 	}
 }
 
@@ -304,6 +307,13 @@ void glWidget::loadNewFile(QString filename)
 	parseOptions(filename);
 	if (!initTexturesRaw(DATAFILE)){
 		qDebug() << "Could not load texture";
+
+		parseOptions(lastGoodFilename);
+		initTexturesRaw(DATAFILE);
+	}
+	else{
+		currentFilename = filename;
+		lastGoodFilename = filename;
 	}
 	updateGL();
 }

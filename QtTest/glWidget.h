@@ -49,6 +49,9 @@ private:
 	QPoint lastPosition;
 	TransformationManager transManager;
 
+	QString lastGoodFilename;
+	QString currentFilename;
+
 	void map3DTexture(float textureIndex);
 
 protected:
