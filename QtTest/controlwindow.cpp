@@ -180,6 +180,7 @@ void ControlWindow::initialiseRenderOptions(void)
 	groupRenderFilter->hide();
 	*/
 
+	QIcon icon("about.png");
 	groupRenderFilter = new QGroupBox("Filters");
 	QVBoxLayout *vRadioBox = new QVBoxLayout();
 	xml.dump();
@@ -187,8 +188,14 @@ void ControlWindow::initialiseRenderOptions(void)
 
 	for (int i = 0; i < xml.getNumberFilters(); ++i){
 
-		radioButtons[i] = new QRadioButton(xml.getName(i));
+		radioButtons[i] = new QRadioButton();
+		radioButtons[i]->setStyleSheet(
+			"background-position: right bottom; background-repeat: no-repeat; background-origin: content; background-image: url(\"about.png\") ;"
+			);
+		radioButtons[i]->setText(xml.getName(i));
 		radioButtons[i]->setToolTip(xml.getDescription(i));
+		//radioButtons[i]->setIcon(icon);
+
 //		filterOptions[i] = new QLineEdit("Parameters");
 
 //		filterOptions[i]->hide();
@@ -200,25 +207,34 @@ void ControlWindow::initialiseRenderOptions(void)
 		vRadioBox->addWidget(radioButtons[i]);
 
 		QVector<QString> params = xml.getParameters(i);
-		if (params.count() > 0)
+		/*if (params.count() > 0)
 		{
 			renderGrid[i] = new QGridLayout();
 		}
 		else{
 			renderGrid[i] = NULL;
-		}
+		}*/
+
+		renderGrid[i] = new QGridLayout();
+		QLabel * description = new QLabel(xml.getDescription(i));
+		description->hide();
+		renderGrid[i]->addWidget(description, 0, 0, 1, 2);
 
 		for (int j = 0; j < params.count(); ++j)
 		{
 			//QHBoxLayout * hbox = new QHBoxLayout();
 			QLabel * label = new QLabel(params[j]);
-			/*hbox->addWidget(label);*/ renderGrid[i]->addWidget(label, j, 0);
+			label->hide();
+			/*hbox->addWidget(label);*/ renderGrid[i]->addWidget(label, j+1, 0);
 			QLineEdit * lineEdit = new QLineEdit();
-			/*hbox->addWidget(lineEdit);*/ renderGrid[i]->addWidget(lineEdit, j, 1);
-			/*vRadioBox->addLayout(hbox);*/ vRadioBox->addLayout(renderGrid[i]);
+			lineEdit->hide();
+			/*hbox->addWidget(lineEdit);*/ renderGrid[i]->addWidget(lineEdit, j+1, 1);
+			/*vRadioBox->addLayout(hbox);*/ 
 		}
 
-		
+		if (renderGrid[i] != NULL){
+			vRadioBox->addLayout(renderGrid[i]);
+		}
 //		vRadioBox->addWidget(filterOptions[i]);
 	}
 
@@ -237,57 +253,13 @@ void ControlWindow::initialiseRenderOptions(void)
 * */
 void ControlWindow::radioButtonToggled(void)
 {
-	for (int i = 0; i < N_FILTERS; ++i)
+	for (int i = 0; i < xml.getNumberFilters(); ++i)
 	{
 		if (radioButtons[i]->isChecked()){
-			//filterOptions[i]->show();
-
-
-			if (renderGrid[i] != NULL){
-				
-				QLayoutItem *item = 0;
-				QWidget *widget = 0;
-				
-				for (int k = 0; k < renderGrid[i]->rowCount(); ++k)
-				{
-					for (int j = 0; j < renderGrid[i]->columnCount(); ++j)
-					{
-						item = renderGrid[i]->itemAtPosition(k, j);
-						widget = item ? item->widget() : 0;
-						if (widget)
-							widget->setVisible(true);
-					}
-				}
-			}
-
-			/*QString text = filterOptions[i]->text();
-			bool ok;
-
-			int parameter = text.toInt(&ok);
-			if (ok){
-				emit imageFilterChosen(i, parameter);
-			}*/
-
+			setRenderVisibility(true, i);
 		}
 		else{
-			//filterOptions[i]->hide();
-
-			if (renderGrid[i] != NULL){
-
-				QLayoutItem *item = 0;
-				QWidget *widget = 0;
-
-				for (int k = 0; k < renderGrid[i]->rowCount(); ++k)
-				{
-					for (int j = 0; j < renderGrid[i]->columnCount(); ++j)
-					{
-						item = renderGrid[i]->itemAtPosition(k, j);
-						widget = item ? item->widget() : 0;
-						if (widget)
-							widget->setVisible(false);
-					}
-				}
-			}
+			setRenderVisibility(false, i);
 		}
 	}
 }
@@ -427,4 +399,25 @@ void ControlWindow::lineFinished(void)
 		textFinished = false;
 		emit alphaScale(lineAlphaScale->text());
 	}
+}
+
+void ControlWindow::setRenderVisibility(bool isVisible, int i)
+{
+	if (renderGrid[i] != NULL){
+
+		QLayoutItem *item = 0;
+		QWidget *widget = 0;
+
+		for (int k = 0; k < renderGrid[i]->rowCount(); ++k)
+		{
+			for (int j = 0; j < renderGrid[i]->columnCount(); ++j)
+			{
+				item = renderGrid[i]->itemAtPosition(k, j);
+				widget = item ? item->widget() : 0;
+				if (widget)
+					widget->setVisible(isVisible);
+			}
+		}
+	}
+
 }

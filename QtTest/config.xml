@@ -10,7 +10,8 @@
     </option>
     <option id="3">
         <name>Brightness / Darkness</name>
-        <description>Enter a positive value to brighten the image or a negative value to darken it</description>
+        <description>Enter a positive value to brighten the
+image or a negative value to darken it</description>
         <parameters>
             <description> Adjustment level </description>
         </parameters>

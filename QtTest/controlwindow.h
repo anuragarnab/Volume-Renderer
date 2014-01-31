@@ -56,6 +56,7 @@ private:
 	void initialiseVolumeOptions(void);
 	void toggleButtons(int option);
 	void minimiseButtons(void);
+	void setRenderVisibility(bool isVisible, int i);
 
 	int renderButtonHits;
 
