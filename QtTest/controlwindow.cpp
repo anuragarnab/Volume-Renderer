@@ -158,47 +158,21 @@ void ControlWindow::handleEnhanceFingerprint(void)
 */
 void ControlWindow::initialiseRenderOptions(void)
 {
-	/*groupRenderFilter = new QGroupBox("Filters");
-	QVBoxLayout *vRadioBox = new QVBoxLayout();
 
-	for (int i = 0; i < N_FILTERS; ++i){
-		radioButtons[i] = new QRadioButton(QString("Filter(%1)").arg(i + 1));
-		filterOptions[i] = new QLineEdit("Parameters");
-
-		filterOptions[i]->hide();
-
-		connect(radioButtons[i], SIGNAL(toggled(bool)), this, SLOT(radioButtonToggled()));
-		connect(filterOptions[i], SIGNAL(textChanged(QString)), this, SLOT(radioButtonToggled()));
-
-		vRadioBox->addWidget(radioButtons[i]);
-		vRadioBox->addWidget(filterOptions[i]);
-	}
-
-	groupRenderFilter->setLayout(vRadioBox);
-	renderLayout.addWidget(groupRenderFilter);
-
-	groupRenderFilter->hide();
-	*/
-
-	QIcon icon("about.png");
+//	QIcon icon("about.png");
 	groupRenderFilter = new QGroupBox("Filters");
 	QVBoxLayout *vRadioBox = new QVBoxLayout();
-	xml.dump();
-	qDebug() << xml.getNumberFilters();
+//	xml.dump();
+//	qDebug() << xml.getNumberFilters();
 
 	for (int i = 0; i < xml.getNumberFilters(); ++i){
 
 		radioButtons[i] = new QRadioButton();
-		radioButtons[i]->setStyleSheet(
-			"background-position: right bottom; background-repeat: no-repeat; background-origin: content; background-image: url(\"about.png\") ;"
-			);
+//		radioButtons[i]->setStyleSheet(
+//			"background-position: right bottom; background-repeat: no-repeat; background-origin: content; background-image: url(\"about.png\") ;"
+//			);
 		radioButtons[i]->setText(xml.getName(i));
 		radioButtons[i]->setToolTip(xml.getDescription(i));
-		//radioButtons[i]->setIcon(icon);
-
-//		filterOptions[i] = new QLineEdit("Parameters");
-
-//		filterOptions[i]->hide();
 
 		connect(radioButtons[i], SIGNAL(toggled(bool)), this, SLOT(radioButtonToggled()));
 //		connect(filterOptions[i], SIGNAL(textChanged(QString)), this, SLOT(radioButtonToggled()));
@@ -207,13 +181,6 @@ void ControlWindow::initialiseRenderOptions(void)
 		vRadioBox->addWidget(radioButtons[i]);
 
 		QVector<QString> params = xml.getParameters(i);
-		/*if (params.count() > 0)
-		{
-			renderGrid[i] = new QGridLayout();
-		}
-		else{
-			renderGrid[i] = NULL;
-		}*/
 
 		renderGrid[i] = new QGridLayout();
 		QLabel * description = new QLabel(xml.getDescription(i));
@@ -222,20 +189,21 @@ void ControlWindow::initialiseRenderOptions(void)
 
 		for (int j = 0; j < params.count(); ++j)
 		{
-			//QHBoxLayout * hbox = new QHBoxLayout();
 			QLabel * label = new QLabel(params[j]);
 			label->hide();
-			/*hbox->addWidget(label);*/ renderGrid[i]->addWidget(label, j+1, 0);
+			renderGrid[i]->addWidget(label, j+1, 0);
 			QLineEdit * lineEdit = new QLineEdit();
+
+			connect(lineEdit, SIGNAL(textChanged(QString)), this, SLOT(radioButtonToggled()));
+
 			lineEdit->hide();
-			/*hbox->addWidget(lineEdit);*/ renderGrid[i]->addWidget(lineEdit, j+1, 1);
-			/*vRadioBox->addLayout(hbox);*/ 
+			renderGrid[i]->addWidget(lineEdit, j+1, 1);
 		}
 
 		if (renderGrid[i] != NULL){
 			vRadioBox->addLayout(renderGrid[i]);
 		}
-//		vRadioBox->addWidget(filterOptions[i]);
+
 	}
 
 	groupRenderFilter->setLayout(vRadioBox);
@@ -257,6 +225,26 @@ void ControlWindow::radioButtonToggled(void)
 	{
 		if (radioButtons[i]->isChecked()){
 			setRenderVisibility(true, i);
+
+			QString params = "";
+
+			QLayoutItem *item = 0;
+			QWidget *widget = 0;
+			QLineEdit* line = 0;
+
+			for (int k = 0; k < renderGrid[i]->rowCount(); ++k)
+			{
+				item = renderGrid[i]->itemAtPosition(k+1, 1);
+				widget = item ? item->widget() : 0;
+				if (widget){
+					line = (QLineEdit *)widget; // I know this for sure!
+					params = params + line->text() + " ";
+				}
+			}
+			
+			params = params.trimmed();
+			qDebug() << "Parameters of button " << i << " are " << params;
+			emit imageFilterChosen(i, params);
 		}
 		else{
 			setRenderVisibility(false, i);
@@ -419,5 +407,10 @@ void ControlWindow::setRenderVisibility(bool isVisible, int i)
 			}
 		}
 	}
+}
 
+
+int ControlWindow::getNumberFilters(void)
+{
+	return xml.getNumberFilters();
 }

@@ -5,10 +5,6 @@
         <description>Converts a 3 channel RGB image to grayscale</description>
     </option>
     <option id="2">
-        <name>Filter 2</name>
-        <description>Description for filter 2</description>
-    </option>
-    <option id="3">
         <name>Brightness / Darkness</name>
         <description>Enter a positive value to brighten the
 image or a negative value to darken it</description>
@@ -16,13 +12,22 @@ image or a negative value to darken it</description>
             <description> Adjustment level </description>
         </parameters>
     </option>
-    <option id="4">
+    <option id="3">
         <name>Blurring</name>
         <description>Blurs the image</description>
         <parameters>
             <description> Blurring factor</description>
         </parameters>
     </option>
+
+    <option id="4">
+        <name>Saturation</name>
+        <description>Increase or decrease the saturation</description>
+        <parameters>
+            <description>Saturation change</description>
+        </parameters>
+    </option>
+
     <option id="5">
         <name>Amazing filter filter</name>
         <description>Creates an amazing effect</description>

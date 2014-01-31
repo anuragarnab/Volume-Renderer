@@ -21,12 +21,12 @@ class RenderWindow : public QWidget
 	Q_OBJECT
 
 public:
-	RenderWindow(QWidget *parent = 0);
+	RenderWindow(int numberFilters, QWidget *parent = 0);
 	virtual ~RenderWindow();
 
 	void addVolumeRenderer(glWidget * volumeRenderer);
 
-	typedef void (RenderWindow::*ProcessFn)(int delta, QImage * image);
+	typedef void (RenderWindow::*ProcessFn)(QString parameters, QImage * image);
 
 private:
 
@@ -37,7 +37,7 @@ private:
 	int minNo;
 	int paddingLength; // ie img001.png has a padding length of 3
 	int processOption;
-	int processParameter;
+	QString processParameter;
 
 	QVBoxLayout mainLayout;
 	QHBoxLayout imageLayout;
@@ -59,16 +59,18 @@ private:
 	void computeTotalImages(void);
 	void initialiseSlider(void);
 
-	void processGrayscale(int delta, QImage * image);
-	void processBrightness(int delta, QImage * image);
-	void processBlur(int kernel, QImage * image);
-	void processSaturation(int delta, QImage * image);
+	void processGrayscale(QString parameters, QImage * image);
+	void processBrightness(QString parameters, QImage * image);
+	void processBlur(QString parameters, QImage * image);
+	void processSaturation(QString parameters, QImage * image);
+	void processStub(QString parameters, QImage * image);
 
 	void assignImage(QGraphicsScene * gScene, QImage * gImage);
 
 	void initVolRendererThread(QString filename);
 
-	ProcessFn processingFunctions[N_FILTERS];
+	//ProcessFn processingFunctions[N_FILTERS];
+	ProcessFn * processingFunctions;
 
 public slots:
 
@@ -76,7 +78,7 @@ public slots:
 	void initialiseImages(QString filename);
 
 	void initVolRenderer(QString filename);
-	void getProcessOption(int number, int parameter);
+	void getProcessOption(int number, QString parameters);
 
 	void forceClose(void);
 

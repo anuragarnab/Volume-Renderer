@@ -26,6 +26,7 @@ public:
 	~ControlWindow();
 
 	QLineEdit * getLineThreshold(void);
+	int getNumberFilters(void);
 
 private:
 
@@ -92,7 +93,7 @@ private slots:
 signals:
 	void imageFilename(QString filname);
 	void volRendConfigFile(QString filename);
-	void imageFilterChosen(int number, int paramter);
+	void imageFilterChosen(int number, QString parameters);
 	void alphaScale(QString line);
 
 	void closeWindow(void);

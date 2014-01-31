@@ -20,7 +20,7 @@
 * Function pointers are also set up to the filtering functions
 *
 */
-RenderWindow::RenderWindow(QWidget *parent) :
+RenderWindow::RenderWindow(int numberFilters, QWidget *parent) :
 QWidget(parent)
 {
 	// setting image reading settings
@@ -57,10 +57,13 @@ QWidget(parent)
 
 	mainLayout.addWidget(mainSplit);
 
+	processingFunctions = new ProcessFn[numberFilters];
 	processingFunctions[0] = &RenderWindow::processGrayscale;
 	processingFunctions[1] = &RenderWindow::processBrightness;
 	processingFunctions[2] = &RenderWindow::processBlur;
 	processingFunctions[3] = &RenderWindow::processSaturation;
+	processingFunctions[4] = &RenderWindow::processStub;
+
 
 	//loadImages();
 	setLayout(&mainLayout);
@@ -266,7 +269,7 @@ void RenderWindow::initVolRendererThread(QString filename)
 * Gets the filtering option from the other window
 *
 */
-void RenderWindow::getProcessOption(int number, int parameter)
+void RenderWindow::getProcessOption(int number, QString parameter)
 {
 	processOption = number;
 	processParameter = parameter;
@@ -277,9 +280,11 @@ void RenderWindow::getProcessOption(int number, int parameter)
 *
 * Grayscale filter
 *
+* Doesn't use any parameters but needed because all functions in function pointer array have the same signature
 */
-void RenderWindow::processGrayscale(int delta, QImage * image)
+void RenderWindow::processGrayscale(QString parameters, QImage * image)
 {
+
 	QRgb * line;
 
 	for (int y = 0; y<image->height(); ++y){
@@ -301,8 +306,17 @@ void RenderWindow::processGrayscale(int delta, QImage * image)
 * Positive value makes image brighter, negative value darkens
 *
 */
-void RenderWindow::processBrightness(int delta, QImage * image)
+void RenderWindow::processBrightness(QString parameters, QImage * image)
 {
+	bool ok = false;
+	int delta = parameters.toInt(&ok);
+
+	if (!ok)
+	{
+		return;
+	}
+
+	
 	QColor oldColor;
 	int r, g, b;
 
@@ -334,8 +348,16 @@ void RenderWindow::processBrightness(int delta, QImage * image)
 * The parameter kernel determines the values of the matrix
 *
 */
-void RenderWindow::processBlur(int kernel, QImage * image)
+void RenderWindow::processBlur(QString parameters, QImage * image)
 {
+
+	bool ok = false;
+	int kernel = parameters.toInt(&ok);
+
+	if (!ok)
+	{
+		return;
+	}
 
 	if (kernel == 0)
 	{
@@ -396,8 +418,17 @@ void RenderWindow::processBlur(int kernel, QImage * image)
 * Increases or decreases the saturation
 *
 */
-void RenderWindow::processSaturation(int delta, QImage * image)
+void RenderWindow::processSaturation(QString parameters, QImage * image)
 {
+	bool ok = false;
+	int delta = parameters.toInt(&ok);
+
+	if (!ok)
+	{
+		return;
+	}
+
+	
 	QColor oldColor;
 	QColor newColor;
 	int h, s, l;
@@ -421,6 +452,11 @@ void RenderWindow::processSaturation(int delta, QImage * image)
 	}
 
 	assignImage(scene2, image);
+}
+
+void RenderWindow::processStub(QString parameters, QImage * image)
+{
+	qDebug() << "Unimplemented filter. Received parameters: " << parameters;
 }
 
 /*
