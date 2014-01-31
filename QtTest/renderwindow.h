@@ -65,9 +65,19 @@ public slots:
 	void initVolRenderer(QString filename);
 	void getProcessOption(int number, int parameter);
 
-	private slots:
+	void forceClose(void);
+
+private slots:
 
 	void sliderChanged(int newNumber);
+
+protected:
+
+	void closeEvent(QCloseEvent *event);
+
+signals:
+
+	void closeWindow(void);
 };
 
 #endif // RENDERWINDOW_H

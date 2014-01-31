@@ -79,7 +79,6 @@ void ControlWindow::handleComputeFingerprint(void)
 void ControlWindow::handleEnhanceFingerprint(void)
 {
 	qDebug() << "Enhance fingerprint slot called";
-
 }
 
 void ControlWindow::initialiseRenderOptions(void)
@@ -102,10 +101,6 @@ void ControlWindow::initialiseRenderOptions(void)
 
 	groupRenderFilter->setLayout(vRadioBox);
 	renderLayout.addWidget(groupRenderFilter);
-
-	//    if (N_FILTERS > 0){
-	//        radioButtons[0]->setChecked(true);
-	//    }
 
 	groupRenderFilter->hide();
 }
@@ -134,10 +129,20 @@ void ControlWindow::radioButtonToggled(void)
 				emit imageFilterChosen(i, parameter);
 			}
 
-			//emit radioButtonPressed(i, filterOptions[i]->);
 		}
 		else{
 			filterOptions[i]->hide();
 		}
 	}
+}
+
+void ControlWindow::closeEvent(QCloseEvent *event)
+{
+	emit closeWindow();
+	event->accept();
+}
+
+void ControlWindow::forceClose(void)
+{
+	close();
 }

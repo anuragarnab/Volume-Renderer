@@ -33,6 +33,14 @@ private:
 
 	void initialiseRenderOptions(void);
 
+protected:
+
+	void closeEvent(QCloseEvent *event);
+
+public slots:
+
+	void forceClose(void);
+
 private slots:
 	void handleVolumeRendering(void);
 	void handleRenderFilter(void);
@@ -46,6 +54,8 @@ signals:
 	void imageFilename(QString filname);
 	void volRendConfigFile(QString filename);
 	void imageFilterChosen(int number, int paramter);
+
+	void closeWindow(void);
 
 };
 
