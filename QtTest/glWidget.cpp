@@ -297,6 +297,11 @@ QSize glWidget::minimumSizeHint() const
 	//return QSize(IMAGEWIDTH, IMAGEHEIGHT);
 }
 
+QSize glWidget::sizeHint() const
+{
+	return QSize(256, 256);
+}
+
 /*
 *
 * Parse the config file to set up the state of the renderer
@@ -544,6 +549,8 @@ bool glWidget::initTexturesFiles(void)
 	}
 
 	delete[] chRGBABuffer;
+
+	loadSuccess = true;
 	return true;
 }
 
@@ -573,5 +580,11 @@ void glWidget::setAlphaScale(float alphaScale)
 		qDebug() << "Could not load texture";
 	}
 
+	updateGL();
+}
+
+void glWidget::displayBlack(void)
+{
+	loadSuccess = false;
 	updateGL();
 }

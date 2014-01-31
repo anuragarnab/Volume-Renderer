@@ -64,10 +64,9 @@ QWidget(parent)
 	processingFunctions[3] = &RenderWindow::processSaturation;
 	processingFunctions[4] = &RenderWindow::processStub;
 
-	//loadImages();
 	setLayout(&mainLayout);
 	setWindowTitle("Rendering window");
-	setMinimumSize(400, 300);
+	setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT-VOL_REND_HEIGHT);
 }
 
 
@@ -145,6 +144,11 @@ void RenderWindow::initialiseImages(QString filename)
 		computeTotalImages();
 		initialiseSlider();
 	}
+
+	if (volumeRenderer != NULL){
+		volumeRenderer->displayBlack();
+	}
+
 }
 
 /*
@@ -242,7 +246,12 @@ void RenderWindow::initVolRenderer(QString filename)
 
 	if (volumeRenderer == NULL){
 		volumeRenderer = /*new glWidget(filename)*/ new glWidget(filePrefix, extension, paddingLength, minNo, maxNo);
+		volumeRenderer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+		volumeRenderer->setFixedHeight(VOL_REND_HEIGHT);
 		mainSplit->addWidget(volumeRenderer);
+		setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+		loadImages();
+
 	}
 	else{
 		//volumeRenderer->loadNewFile(filename);
@@ -467,8 +476,13 @@ void RenderWindow::processStub(QString parameters, QImage * image)
 */
 void RenderWindow::assignImage(QGraphicsScene * gScene, QImage * gImage)
 {
+	
+	QImage resized = gImage->scaled(imageView->width(), imageView->height()-3, Qt::AspectRatioMode::KeepAspectRatio);
+
+	//qDebug() << resized.width() << " " << resized.height();
+	
 	gScene->clear();
-	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(*gImage));
+	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(resized));
 	gScene->addItem(item2);
 
 	//Calculates and returns the bounding rect of all items on the scene.

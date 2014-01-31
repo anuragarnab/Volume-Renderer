@@ -44,8 +44,6 @@ void xmlParser::parseXml(void) {
 			continue;
 		}
 
-		qDebug() << xml.tokenString();
-
 		if (token == QXmlStreamReader::StartElement) {
 
 			if (xml.name() == "options") {
@@ -61,7 +59,7 @@ void xmlParser::parseXml(void) {
 	}
 	/* Error handling. */
 	if (xml.hasError()) {
-		qDebug() << "Error while parsing";
+		qDebug() << "Error while parsing xml file";
 	}
 	/* Removes any device() or data from the reader
 	* and resets its internal state to the initial state. */
@@ -96,8 +94,6 @@ void xmlParser::dump(void)
 *
 */
 void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption& fOption) {
-
-	int i = 0;
 	
 	/* Check that the correct element is received. */
 	if (xml.tokenType() != QXmlStreamReader::StartElement &&
@@ -107,13 +103,10 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption
 
 	QXmlStreamAttributes attributes = xml.attributes();
 
-		qDebug() << ++i << xml.tokenString();
 		xml.readNext();
 
 		while (!(xml.tokenType() == QXmlStreamReader::EndElement &&
 			xml.name() == pattern)) {
-			qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
-
 
 			if (xml.tokenType() == QXmlStreamReader::StartElement) {
 
@@ -122,7 +115,6 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption
 				if (xml.name() == "name")
 				{
 					xml.readNext();
-					qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
 
 					if (xml.tokenType() != QXmlStreamReader::Characters)
 					{
@@ -144,7 +136,6 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption
 				else if (xml.name() == "description")
 				{
 					xml.readNext();
-					qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
 
 					if (xml.tokenType() != QXmlStreamReader::Characters)
 					{
