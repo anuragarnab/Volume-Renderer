@@ -559,4 +559,12 @@ void glWidget::setAlphaThresh(float alphaThresh)
 void glWidget::setAlphaScale(float alphaScale)
 {
 	ALPHA_SCALE = alphaScale;
+
+	loadSuccess = initTexturesFiles();
+
+	if (!loadSuccess){
+		qDebug() << "Could not load texture";
+	}
+
+	updateGL();
 }

@@ -81,6 +81,7 @@ public slots:
 	void forceClose(void);
 
 	void getAlphaThresh(QString line);
+	void getAlphaScale(QString line);
 
 private slots:
 

@@ -21,6 +21,9 @@ ControlWindow::ControlWindow(QWidget *parent)
 	renderButtonHits = 0;
 	uploadHits = 0;
 	volRenderHits = 0;
+	volRenderClicks = 0;
+	textChanged = false; 
+	textFinished = false;
 
 	uploadOCT = new QCommandLinkButton("Upload OCT");
 	renderFilter = new QCommandLinkButton("Render Filter");
@@ -277,21 +280,44 @@ void ControlWindow::initialiseVolumeOptions(void)
 	label2 = new QLabel("Scaling [0,1]");
 	lineAlphaScale = new QLineEdit();
 	lineAlphaThresh = new QLineEdit();
-	volumeButton = new QPushButton("Render");
+	//volumeButton = new QPushButton("Render");
 
 	grid->addWidget(label1, 0, 0);
 	grid->addWidget(lineAlphaThresh, 0, 1);
 	grid->addWidget(label2, 1, 0);
 	grid->addWidget(lineAlphaScale, 1, 1);
-	grid->addWidget(volumeButton, 2, 1);
+	//grid->addWidget(volumeButton, 2, 1);
 
 	groupVolume->setLayout(grid);
 	volumeLayout.addWidget(groupVolume);
 
+	connect(lineAlphaScale, SIGNAL(textChanged(QString)), this, SLOT(lineChanged(QString)));
+	connect(lineAlphaScale, SIGNAL(editingFinished()), this, SLOT(lineFinished()));
+
+
 	groupVolume->hide();
 }
 
-QLineEdit * ControlWindow::getLineEdit(void)
+QLineEdit * ControlWindow::getLineThreshold(void)
 {
 	return lineAlphaThresh;
+}
+
+void ControlWindow::lineChanged(QString line)
+{
+	textChanged = true;
+	qDebug() << "Got: " << line;
+}
+
+void ControlWindow::lineFinished(void)
+{
+	textFinished = true;
+	qDebug() << "Editing finished";
+
+	if (textFinished && textChanged){
+
+		textChanged = false;
+		textFinished = false;
+		emit alphaScale(lineAlphaScale->text());
+	}
 }

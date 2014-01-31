@@ -24,7 +24,7 @@ public:
 	ControlWindow(QWidget *parent = 0);
 	~ControlWindow();
 
-	QLineEdit * getLineEdit(void);
+	QLineEdit * getLineThreshold(void);
 
 private:
 
@@ -45,7 +45,7 @@ private:
 	QLineEdit * lineAlphaScale;
 	QLabel * label1;
 	QLabel * label2;
-	QPushButton * volumeButton;
+	//QPushButton * volumeButton;
 
 	QRadioButton ** radioButtons;
 	QLineEdit ** filterOptions;
@@ -60,6 +60,9 @@ private:
 	int uploadHits;
 	int volRenderHits;
 	int volRenderClicks;
+
+	bool textChanged;
+	bool textFinished;
 
 protected:
 
@@ -78,12 +81,17 @@ private slots:
 
 	void radioButtonToggled(void);
 
+	void lineChanged(QString line);
+	void lineFinished(void);
+
 signals:
 	void imageFilename(QString filname);
 	void volRendConfigFile(QString filename);
 	void imageFilterChosen(int number, int paramter);
+	void alphaScale(QString line);
 
 	void closeWindow(void);
+
 
 };
 

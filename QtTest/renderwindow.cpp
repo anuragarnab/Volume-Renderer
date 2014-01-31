@@ -232,9 +232,6 @@ void RenderWindow::addVolumeRenderer(glWidget * volumeRenderer)
 void RenderWindow::initVolRenderer(QString filename)
 {
 
-
-	/*imageSelector->hide();
-	bar->show();*/
 	BusyWindow b;
 	b.show();
 
@@ -471,5 +468,22 @@ void RenderWindow::getAlphaThresh(QString line)
 
 	if (isSuccess && value >= 0.0f && value <= 1.0f && volumeRenderer != NULL){
 		volumeRenderer->setAlphaThresh(value);
+	}
+}
+
+void RenderWindow::getAlphaScale(QString line)
+{
+	qDebug() << "Slot got " << line;
+
+	bool isSuccess = false;
+	float value = line.toFloat(&isSuccess);
+
+	if (isSuccess && value >= 0.0f && value <= 1.0f && volumeRenderer != NULL){
+
+		BusyWindow b;
+		b.show();
+		QCoreApplication::processEvents();
+
+		volumeRenderer->setAlphaScale(value);
 	}
 }
