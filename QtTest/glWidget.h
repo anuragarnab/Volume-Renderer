@@ -4,6 +4,7 @@
 #include <QGLWidget>
 #include <QMouseEvent>
 #include <QPoint>
+#include <QKeyEvent>
 #include "TransformationManager.h"
 
 #define pIMAGEWIDTH 1
@@ -27,6 +28,7 @@ public:
 	void paintGL();
 
 	QSize minimumSizeHint() const;
+	void loadNewFile(QString filename);
 
 signals:
 
@@ -48,6 +50,8 @@ private:
 	TransformationManager transManager;
 
 	void map3DTexture(float textureIndex);
+
+
 
 protected:
 	void mousePressEvent(QMouseEvent *event);

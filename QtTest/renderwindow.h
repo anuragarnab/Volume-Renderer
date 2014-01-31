@@ -29,10 +29,15 @@ private:
 	QHBoxLayout imageLayout;
 	QHBoxLayout sliderLayout;
 
+	QSplitter * mainSplit;
+	QSplitter * imageSplit;
+	QSplitter *sliderSplit;
+
 	QSlider * imageSelector;
 	QGraphicsView * imageView;
 	QGraphicsScene* scene;
 	QGraphicsView * imageView2;
+	QGraphicsScene * scene2;
 	QLabel * imageNo;
 	glWidget * volumeRenderer; 
 

@@ -18,22 +18,42 @@ QWidget(parent)
 	volumeRenderer = NULL;
 
 	scene = new QGraphicsScene();
+	scene2 = new QGraphicsScene();
 	imageSelector = new QSlider(Qt::Horizontal);
 	imageView = new QGraphicsView(scene);
-	imageView2 = new QGraphicsView();
+	imageView2 = new QGraphicsView(scene2);
 	imageNo = new QLabel();
 
-	sliderLayout.addWidget(imageSelector);
-	sliderLayout.addWidget(imageNo);
+//	imageSelector->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//	imageNo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-	imageLayout.addWidget(imageView);
-	imageLayout.addWidget(imageView2);
+	sliderSplit = new QSplitter();
+	imageSplit = new QSplitter();
+	mainSplit = new QSplitter();
+
+//	sliderSplit->addWidget(imageSelector);
+//	sliderSplit->addWidget(imageNo);
+//	sliderSplit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+		sliderLayout.addWidget(imageSelector);
+		sliderLayout.addWidget(imageNo);
+
+		//imageLayout.addWidget(imageView);
+		//imageLayout.addWidget(imageView2);
+	imageSplit->addWidget(imageView);
+	imageSplit->addWidget(imageView2);
 
 	/*glWidget * glw = new glWidget(256, 256, 109);
 
  	mainLayout.addWidget(glw);*/
-	mainLayout.addLayout(&sliderLayout);
-	mainLayout.addLayout(&imageLayout);
+		mainLayout.addLayout(&sliderLayout);
+		//mainLayout.addLayout(&imageLayout);
+
+	//mainSplit->addWidget(sliderSplit);
+	mainSplit->addWidget(imageSplit);
+	mainSplit->setOrientation(Qt::Vertical);
+
+	mainLayout.addWidget(mainSplit);
 
 	//loadImages();
 	setLayout(&mainLayout);
@@ -67,6 +87,19 @@ bool RenderWindow::loadImages(void)
 
 	QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
 	scene->addItem(item);
+
+
+	// second pane
+	for (int row = 0; row < image.height(); ++row){
+		for (int col = 0; col < image.width(); ++col){
+			QRgb colour = image.pixel(col, row);
+			image.setPixel(qGreen(colour), qRed(colour), qBlue(colour));
+		}
+	}
+
+	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+	scene2->addItem(item2);
+
 	return true;
 }
 
@@ -166,7 +199,7 @@ void RenderWindow::computeTotalImages(void)
 	}
 
 	--maxNo;
-	qDebug() << maxNo;
+	qDebug() << "Max number " << maxNo;
 }
 
 void RenderWindow::initialiseSlider(void)
@@ -174,12 +207,12 @@ void RenderWindow::initialiseSlider(void)
 	imageSelector->setMinimum(minNo);
 	imageSelector->setMaximum(maxNo);
 
-	currentNo = 0;
+	currentNo = minNo;
 	imageSelector->setValue(currentNo);
 
 	connect(imageSelector, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
-	//emit imageSelector->valueChanged(imageSelector->value());
-	sliderChanged(0);// Above line creates a problem in Qt 4.8
+	emit imageSelector->valueChanged(imageSelector->value());
+	//sliderChanged(0);// Above line creates a problem in Qt 4.8
 }
 
 void RenderWindow::sliderChanged(int newNumber)
@@ -201,11 +234,12 @@ void RenderWindow::initVolRenderer(QString filename)
 	if (volumeRenderer == NULL){
 		//volumeRenderer = new glWidget(256, 256, 109);
 		volumeRenderer = new glWidget(filename);
-		mainLayout.addWidget(volumeRenderer);
+			//mainLayout.addWidget(volumeRenderer);
+		mainSplit->addWidget(volumeRenderer);
 	}
 	else{
 		//volumeRenderer = new glWidget(256, 256, 100);
-
+		/*
 		QLayoutItem *child;
 		child = mainLayout.takeAt(2);
 
@@ -213,7 +247,11 @@ void RenderWindow::initVolRenderer(QString filename)
 		delete child;
 
 		volumeRenderer = new glWidget(filename);
-		mainLayout.addWidget(volumeRenderer);
+			//mainLayout.addWidget(volumeRenderer);
+		mainSplit->addWidget(volumeRenderer);
+		*/
+
+		volumeRenderer->loadNewFile(filename);
 	}
 	qDebug() << "Got " << filename;
 }

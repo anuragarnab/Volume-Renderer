@@ -267,8 +267,6 @@ bool glWidget::parseOptions(QString filename)
 					break;
 				}
 			}
-
-
 		}
 		inputFile.close();
 	}
@@ -280,15 +278,14 @@ bool glWidget::parseOptions(QString filename)
 	return false;
 }
 
+
 void glWidget::mousePressEvent(QMouseEvent *event)
 {
 	lastPosition = event->pos();
-	qDebug() << lastPosition;
 }
+
 void glWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	/*lastPosition = event->pos();
-	qDebug() << lastPosition;*/
 
 	int x = event->x();
 	int y = event->y();
@@ -298,7 +295,15 @@ void glWidget::mouseMoveEvent(QMouseEvent *event)
 		transManager.Rotate((float)(lastPosition.y() - y), (float)(lastPosition.x() - x), 0.0f);
 		lastPosition = event->pos();
 	}
-		
-	qDebug() << "Move called";
+
+	updateGL();
+}
+
+void glWidget::loadNewFile(QString filename)
+{
+	parseOptions(filename);
+	if (!initTexturesRaw(DATAFILE)){
+		qDebug() << "Could not load texture";
+	}
 	updateGL();
 }
