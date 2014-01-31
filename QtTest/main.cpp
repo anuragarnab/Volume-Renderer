@@ -14,8 +14,20 @@ int main(int argc, char *argv[])
 
 	QObject::connect(&w, SIGNAL(imageFilename(QString)), &r, SLOT(initialiseImages(QString)));
 
+/*	glWidget glw(256, 256, 109);
+//	glw.resize(256, 256);
+
+	QHBoxLayout mainLayout;
+	mainLayout.addWidget(&glw);
+	mainLayout.addWidget(&r);
+	QWidget window;
+
+	window.setLayout(&mainLayout);
+	window.show();*/
+
 	glWidget glw (256, 256, 109);
-	glw.show();
+
+	r.addVolumeRenderer(&glw);
 
 	return a.exec();
 }

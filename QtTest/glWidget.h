@@ -13,6 +13,8 @@ public:
 	void initializeGL();
 	void paintGL();
 
+	QSize minimumSizeHint() const;
+
 signals:
 
 	public slots :

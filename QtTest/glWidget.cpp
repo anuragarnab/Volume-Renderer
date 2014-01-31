@@ -165,3 +165,8 @@ void glWidget::map3DTexture(float textureIndex)
 	glTexCoord3f(0.0f, 1.0f, ((float)textureIndex + 1.0f) / 2.0f);
 	glVertex3f(-dViewPortSize, dViewPortSize, textureIndex); // bottom right corner + z index
 }
+
+QSize glWidget::minimumSizeHint() const
+{
+	return QSize(256, 256);
+}
