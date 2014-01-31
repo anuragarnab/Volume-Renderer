@@ -55,6 +55,11 @@ QWidget(parent)
 
 	mainLayout.addWidget(mainSplit);
 
+	processingFunctions[0] = &RenderWindow::processGrayscale;
+	processingFunctions[1] = &RenderWindow::processBrightness;
+	processingFunctions[2] = &RenderWindow::processBlur;
+	processingFunctions[3] = &RenderWindow::processSaturation;
+
 	//loadImages();
 	setLayout(&mainLayout);
 }
@@ -89,8 +94,7 @@ bool RenderWindow::loadImages(void)
 	QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
 	scene->addItem(item);
 
-
-	processSaturation(35, &image);
+	(this->*processingFunctions[3])(35, &image);
 
 	// second pane
 	/*for (int row = 0; row < image.height(); ++row){

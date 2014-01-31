@@ -5,7 +5,6 @@
 #include <QtWidgets> //Qt5
 #include "glWidget.h"
 
-
 class RenderWindow : public QWidget
 {
 	Q_OBJECT
@@ -15,6 +14,8 @@ public:
 	virtual ~RenderWindow();
 
 	void addVolumeRenderer(glWidget * volumeRenderer);
+
+	typedef void (RenderWindow::*ProcessFn)(int delta, QImage * image);
 
 private:
 
@@ -51,6 +52,8 @@ private:
 	void processSaturation(int delta, QImage * image);
 
 	void assignImage(QGraphicsScene * gScene, QImage * gImage);
+
+	ProcessFn processingFunctions[4];
 
 	public slots:
 
