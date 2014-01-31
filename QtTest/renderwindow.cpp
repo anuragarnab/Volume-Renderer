@@ -93,9 +93,11 @@ bool RenderWindow::loadImages(void)
 		return false;
 	}
 
-	scene->clear();
+	/*scene->clear();
 	QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
-	scene->addItem(item);
+	scene->addItem(item);*/
+
+	assignImage(scene, &image);
 
 	if (processOption > -1){
 		(this->*processingFunctions[processOption])(processParameter, &image);
@@ -469,6 +471,11 @@ void RenderWindow::assignImage(QGraphicsScene * gScene, QImage * gImage)
 	gScene->clear();
 	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(*gImage));
 	gScene->addItem(item2);
+
+	//Calculates and returns the bounding rect of all items on the scene.
+	//This function works by iterating over all items, and because if this, it can be slow for large scenes.
+	QRectF rect = gScene->itemsBoundingRect();
+	gScene->setSceneRect(rect);
 }
 
 /*
