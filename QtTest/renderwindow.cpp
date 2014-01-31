@@ -39,10 +39,6 @@ QWidget(parent)
 	imageView2 = new QGraphicsView(scene2);
 	imageNo = new QLabel();
 	
-	bar = new QProgressBar();
-	bar->setMinimum(0);
-	bar->setMaximum(0);
-
 	scene->addText("Loaded image");
 	scene2->addText("Filtered image");
 
@@ -52,9 +48,6 @@ QWidget(parent)
 
 	sliderLayout.addWidget(imageSelector);
 	sliderLayout.addWidget(imageNo);
-	sliderLayout.addWidget(bar);
-
-	bar->hide();
 
 	imageSplit->addWidget(imageView);
 	imageSplit->addWidget(imageView2);

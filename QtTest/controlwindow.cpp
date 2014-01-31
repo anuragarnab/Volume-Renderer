@@ -18,6 +18,10 @@
 ControlWindow::ControlWindow(QWidget *parent)
 : QWidget(parent)
 {
+	renderButtonHits = 0;
+	uploadHits = 0;
+	volRenderHits = 0;
+
 	uploadOCT = new QCommandLinkButton("Upload OCT");
 	renderFilter = new QCommandLinkButton("Render Filter");
 	volumeRendering = new QCommandLinkButton("Volume Rendering");
@@ -25,10 +29,11 @@ ControlWindow::ControlWindow(QWidget *parent)
 	enhanceFingerprint = new QCommandLinkButton("Enhance Fingerprint");
 
 	renderLayout.addWidget(renderFilter);
+	volumeLayout.addWidget(volumeRendering);
 
 	mainLayout.addWidget(uploadOCT);
 	mainLayout.addLayout(&renderLayout);
-	mainLayout.addWidget(volumeRendering);
+	/*mainLayout.addWidget(volumeRendering);*/ mainLayout.addLayout(&volumeLayout);
 	mainLayout.addWidget(computeFingerprint);
 	mainLayout.addWidget(enhanceFingerprint);
 
@@ -42,6 +47,7 @@ ControlWindow::ControlWindow(QWidget *parent)
 	filterOptions = new QLineEdit *[N_FILTERS];
 
 	initialiseRenderOptions();
+	initialiseVolumeOptions();
 
 	setLayout(&mainLayout);
 	setWindowTitle("Control Window");
@@ -61,9 +67,20 @@ ControlWindow::~ControlWindow()
 void ControlWindow::handleVolumeRendering(void)
 {
 	qDebug() << "Volume Rendering slot called";
-	//QString fileName = QFileDialog::getOpenFileName(this, "Specify the config file for the volume renderer", QDir::currentPath());
-	emit volRendConfigFile("");
+	toggleButtons(1);
 
+	if (renderButtonHits % 2 == 1)
+	{
+		toggleButtons(0);
+	}
+
+	//QString fileName = QFileDialog::getOpenFileName(this, "Specify the config file for the volume renderer", QDir::currentPath());
+
+	if (uploadHits != volRenderHits){
+		volRenderHits = uploadHits;
+		emit volRendConfigFile("");
+		groupVolume->show();
+	}
 }
 
 /*
@@ -74,20 +91,13 @@ void ControlWindow::handleVolumeRendering(void)
 */
 void ControlWindow::handleRenderFilter(void)
 {
+	toggleButtons(0);
 
-	static int count = 0;
-
-	if (count % 2 == 1)
+	if (volRenderClicks % 2 == 1)
 	{
-		++count;
-		groupRenderFilter->hide();
-		return;
+		toggleButtons(1);
 	}
-
 	qDebug() << "Render filter slot called";
-
-	groupRenderFilter->show();
-	++count;
 }
 
 
@@ -100,9 +110,14 @@ void ControlWindow::handleRenderFilter(void)
 */
 void ControlWindow::handleUploadOCT(void)
 {
+	minimiseButtons();
 	qDebug() << "Upload OCT slot called";
 	QString fileName = QFileDialog::getOpenFileName(this, "Specify first image file in sequence", QDir::currentPath());
-	emit imageFilename(fileName);
+	if (!fileName.isNull()){
+		++uploadHits;
+		qDebug() << uploadHits;
+		emit imageFilename(fileName);
+	}
 }
 
 /*
@@ -114,6 +129,7 @@ void ControlWindow::handleUploadOCT(void)
 void ControlWindow::handleComputeFingerprint(void)
 {
 	qDebug() << "Compute fingerprint slot called";
+	minimiseButtons();
 
 }
 
@@ -125,6 +141,7 @@ void ControlWindow::handleComputeFingerprint(void)
 void ControlWindow::handleEnhanceFingerprint(void)
 {
 	qDebug() << "Enhance fingerprint slot called";
+	minimiseButtons();
 }
 
 /*
@@ -205,4 +222,71 @@ void ControlWindow::closeEvent(QCloseEvent *event)
 void ControlWindow::forceClose(void)
 {
 	close();
+}
+
+void ControlWindow::toggleButtons(int option)
+{
+
+	if (option == 0){
+		if (renderButtonHits % 2 == 1)
+		{
+			++renderButtonHits;
+			groupRenderFilter->hide();
+			return;
+		}
+
+		groupRenderFilter->show();
+		++renderButtonHits;
+	}
+	else if (option == 1)
+	{
+		if (volRenderClicks % 2 == 1)
+		{
+			++volRenderClicks;
+			groupVolume->hide();
+			return;
+		}
+
+		groupVolume->show();
+		++volRenderClicks;
+	}
+}
+
+void ControlWindow::minimiseButtons(void)
+{
+	if (renderButtonHits % 2 == 1)
+	{
+		toggleButtons(0);
+	}
+
+	if (volRenderClicks % 2 == 1)
+	{
+		toggleButtons(1);
+	}
+}
+
+void ControlWindow::initialiseVolumeOptions(void)
+{
+	groupVolume = new QGroupBox("Alpha Options");
+	QGridLayout *grid = new QGridLayout();
+
+	grid->setColumnStretch(0, 2);
+	grid->setColumnStretch(1, 1);
+
+	label1 = new QLabel("Threshold [0,1]");
+	label2 = new QLabel("Scaling [0,1]");
+	lineAlphaScale = new QLineEdit();
+	lineAlphaThresh = new QLineEdit();
+	volumeButton = new QPushButton("Render");
+
+	grid->addWidget(label1, 0, 0);
+	grid->addWidget(lineAlphaScale, 0, 1);
+	grid->addWidget(label2, 1, 0);
+	grid->addWidget(lineAlphaThresh, 1, 1);
+	grid->addWidget(volumeButton, 2, 1);
+
+	groupVolume->setLayout(grid);
+	volumeLayout.addWidget(groupVolume);
+
+	groupVolume->hide();
 }

@@ -71,6 +71,15 @@
     <ClCompile Include="TransformationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_busywindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_busywindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="busywindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="controlwindow.h">
@@ -89,6 +98,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="config.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="busywindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

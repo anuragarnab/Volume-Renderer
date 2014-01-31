@@ -54,7 +54,6 @@ private:
 	QGraphicsScene * scene2;
 	QLabel * imageNo;
 	glWidget * volumeRenderer; 
-	QProgressBar * bar;
 
 	QString getFilename(int number);
 	void computeTotalImages(void);

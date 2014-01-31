@@ -48,12 +48,12 @@ QGLWidget(parent), currentFilename(filename)
 /*
 Constructor. Loads in texture from a sequence of images
 */
-glWidget::glWidget(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo, QWidget * parent) :
+glWidget::glWidget(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo, float alphaThreshold, QWidget * parent) :
 QGLWidget(parent), filePrefix(prefix), extension(_extension), paddingLength(_paddingLength), minNo(_minNo), maxNo(_maxNo)
 {
 	ALPHA_SCALE = 1.0f;
 	SAMPLE_STEP = 0.003f;
-	ALPHA_THRESHOLD = 0.07f;
+	ALPHA_THRESHOLD = alphaThreshold;
 	DATAFILE = "head.raw";
 
 	QImage image;
@@ -533,7 +533,7 @@ bool glWidget::initTexturesFiles(void)
 	int err = glGetError();
 	if (err > 0)
 	{
-		printf("Error %d\n", err);
+		printf("OpenGL Error %d\n", err);
 	}
 
 	delete[] chRGBABuffer;
@@ -548,4 +548,14 @@ QString glWidget::getFilename(int number)
 	}
 	result = result + QString::number(number);
 	return filePrefix + result.remove(0, result.length() - paddingLength) + "." + extension;
+}
+
+void glWidget::setAlphaThresh(float alphaThresh)
+{
+	ALPHA_THRESHOLD = alphaThresh;
+}
+
+void glWidget::setAlphaScale(float alphaScale)
+{
+	ALPHA_SCALE = alphaScale;
 }

@@ -31,7 +31,7 @@ class glWidget : public QGLWidget
 public:
 	explicit glWidget(int width, int height, int count, QWidget *parent = 0);
 	explicit glWidget(QString filename, QWidget * parent = 0);
-	explicit glWidget(QString prefix, QString _extension, int paddingLength, int minNo, int maxNo, QWidget * parent = 0);
+	explicit glWidget(QString prefix, QString _extension, int paddingLength, int minNo, int maxNo, float alphaThreshold = 0.07f, QWidget * parent = 0);
 
 	void resizeGL(int width, int height);
 	void initializeGL();
@@ -41,6 +41,9 @@ public:
 
 	void loadNewFile(QString filename);
 	void loadNewFile(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo);
+
+	void setAlphaThresh(float alphaThresh);
+	void setAlphaScale(float alphaScale);
 
 
 signals:

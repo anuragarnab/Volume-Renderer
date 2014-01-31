@@ -36,11 +36,28 @@ private:
 
 	QVBoxLayout mainLayout;
 	QVBoxLayout renderLayout;
+	QVBoxLayout volumeLayout;
+
+	QGroupBox * groupVolume;
+	QLineEdit * lineAlphaThresh;
+	QLineEdit * lineAlphaScale;
+	QLabel * label1;
+	QLabel * label2;
+	QPushButton * volumeButton;
 
 	QRadioButton ** radioButtons;
 	QLineEdit ** filterOptions;
 
 	void initialiseRenderOptions(void);
+	void initialiseVolumeOptions(void);
+	void toggleButtons(int option);
+	void minimiseButtons(void);
+
+	int renderButtonHits;
+
+	int uploadHits;
+	int volRenderHits;
+	int volRenderClicks;
 
 protected:
 
