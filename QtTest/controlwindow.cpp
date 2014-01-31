@@ -52,6 +52,8 @@ ControlWindow::ControlWindow(QWidget *parent)
 	initialiseRenderOptions();
 	initialiseVolumeOptions();
 
+	mainLayout.setSizeConstraint(QLayout::SetFixedSize);
+
 	setLayout(&mainLayout);
 	setWindowTitle("Control Window");
 }
@@ -227,6 +229,12 @@ void ControlWindow::forceClose(void)
 	close();
 }
 
+/*
+Shows or hides buttons
+
+Option = 0 hides the additional buttons associated with "Render filter"
+Option = 1 hides the additional buttons associated with "Volume rendering"
+*/
 void ControlWindow::toggleButtons(int option)
 {
 
@@ -255,6 +263,9 @@ void ControlWindow::toggleButtons(int option)
 	}
 }
 
+/*
+Minimises the "Volume Rendering" and "Filter Options" buttons when another button is pressed
+*/
 void ControlWindow::minimiseButtons(void)
 {
 	if (renderButtonHits % 2 == 1)
@@ -268,6 +279,9 @@ void ControlWindow::minimiseButtons(void)
 	}
 }
 
+/*
+Initialises the controls when the "Volume Rendering" button is pressed
+*/
 void ControlWindow::initialiseVolumeOptions(void)
 {
 	groupVolume = new QGroupBox("Alpha Options");
@@ -298,21 +312,28 @@ void ControlWindow::initialiseVolumeOptions(void)
 	groupVolume->hide();
 }
 
+/*
+Returns the lineEdit object. 
+Used by the main function to connect its signal to a slot of the RenderWindow class
+*/
 QLineEdit * ControlWindow::getLineThreshold(void)
 {
 	return lineAlphaThresh;
 }
 
+/*
+These slots are called when the line edit (for alpha scaling) is changed and when it loses focus (editingFinished signal)
+The point of this is to only emit a signal to the rendering window class when the user has finished entering text
+This is because it is too expensive to change the alpha scale of the volume renderer multiple times
+*/
 void ControlWindow::lineChanged(QString line)
 {
 	textChanged = true;
-	qDebug() << "Got: " << line;
 }
 
 void ControlWindow::lineFinished(void)
 {
 	textFinished = true;
-	qDebug() << "Editing finished";
 
 	if (textFinished && textChanged){
 

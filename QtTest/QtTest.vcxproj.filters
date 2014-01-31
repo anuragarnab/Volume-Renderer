@@ -80,6 +80,12 @@
     <ClCompile Include="busywindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="filteroption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xmlparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="controlwindow.h">
@@ -103,5 +109,13 @@
     <CustomBuild Include="busywindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="filteroption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xmlparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,8 +3,8 @@
 
 #define N_FILTERS 4
 
-// Set this to non-zero if compiling on windows, 0 for Linux
+// If compiling on windows, you need to define this
 // Untested on Mac
-#define WINDOWS 1
+#define WINDOWS
 
 #endif

@@ -12,6 +12,8 @@
 #include <qtextstream.h>
 #include <qdebug.h>
 
+#include "config.h"
+
 //#include <QCoreApplication>
 /*
 *
@@ -521,9 +523,12 @@ bool glWidget::initTexturesFiles(void)
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-//To do: #IFDEF WINDOWS
+#ifdef WINDOWS
+
 	PFNGLTEXIMAGE3DPROC glTexImage3D;
 	glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
+
+#endif
 
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, IMAGEWIDTH, IMAGEHEIGHT, IMAGECOUNT, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)chRGBABuffer);

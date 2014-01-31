@@ -18,7 +18,7 @@ private:
 	QString xmlFilename;
 
 	void parseOption(QXmlStreamReader &xml);
-	void parseOption(QXmlStreamReader &xml, QString pattern);
+	void parseOption(QXmlStreamReader &xml, QString pattern, filterOption& fOption);
 
 };
 

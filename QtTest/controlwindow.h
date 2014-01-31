@@ -64,6 +64,7 @@ private:
 	bool textChanged;
 	bool textFinished;
 
+
 protected:
 
 	void closeEvent(QCloseEvent *event);

@@ -12,8 +12,22 @@
         <name>Brightness / Darkness</name>
         <description>Enter a positive value to brighten the image or a negative value to darken it</description>
         <parameters>
-            <description> Positve value to brighten, negative to darken </description>
-            <p1> Adjustment level</p1>
+            <description> Adjustment level </description>
+        </parameters>
+    </option>
+    <option id="4">
+        <name>Blurring</name>
+        <description>Blurs the image</description>
+        <parameters>
+            <description> Blurring factor</description>
+        </parameters>
+    </option>
+    <option id="5">
+        <name>Amazing filter filter</name>
+        <description>Creates an amazing effect</description>
+        <parameters>
+            <description> First param</description>
+            <description> Second param</description>
         </parameters>
     </option>
 </options>

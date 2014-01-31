@@ -39,7 +39,9 @@ void xmlParser::parseXml(void) {
 			}
 			/* If it's named option, we'll dig the information from there.*/
 			if (xml.name() == "option") {
-				parseOption(xml, "option");
+				filterOption f;
+				parseOption(xml, "option", f);
+				options.push_back(f);
 			}
 		}
 	}
@@ -132,7 +134,7 @@ void xmlParser::dump(void)
 	}
 }
 
-void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern) {
+void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption& fOption) {
 
 	int i = 0;
 	/* Let's check that we're really getting a option. */
@@ -140,8 +142,6 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern) {
 		xml.name() == pattern) {
 		return;
 	}
-
-	filterOption fOption;
 
 	/* Let's get the attributes for person */
 	QXmlStreamAttributes attributes = xml.attributes();
@@ -179,8 +179,17 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern) {
 					fOption.setName(xml.text().toString());
 				}
 
+				if (xml.name() == "description" && pattern == "parameters")
+				{
+					xml.readNext();
+					if (xml.tokenType() != QXmlStreamReader::Characters)
+					{
+						return;
+					}
+					fOption.addParameter(xml.text().toString());
+				}
 				/* We've found description. */
-				if (xml.name() == "description")
+				else if (xml.name() == "description")
 				{
 					xml.readNext();
 					qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
@@ -194,18 +203,10 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern) {
 
 				if (xml.name() == "parameters")
 				{
-					parseOption(xml, "parameters");
+					parseOption(xml, "parameters", fOption);
 				}
 
-				if (xml.name() == "description" && pattern == "parameters")
-				{
-					xml.readNext();
-					if (xml.tokenType() != QXmlStreamReader::Characters)
-					{
-						return;
-					}
-					fOption.addParameter(xml.text().toString());
-				}
+				
 
 
 			}
@@ -214,7 +215,7 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern) {
 		}
 //	}
 
-	options.push_back(fOption);
+//	options.push_back(fOption);
 
 }
 

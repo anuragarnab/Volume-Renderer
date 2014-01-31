@@ -12,7 +12,6 @@
 #include "busywindow.h"
 
 #include "glWidget.h"
-#include <QtConcurrent/QtConcurrent>
 
 /*
 *
@@ -458,6 +457,12 @@ void RenderWindow::closeEvent(QCloseEvent *event)
 	event->accept();
 }
 
+
+/*
+*
+* Slot which receives the alpha threshold and conveys this to the volume renderer
+*
+*/
 void RenderWindow::getAlphaThresh(QString line)
 {
 	qDebug() << "Got " << line;
@@ -471,9 +476,17 @@ void RenderWindow::getAlphaThresh(QString line)
 	}
 }
 
+
+/*
+*
+* Slot which receives the alpha scaling factor and conveys this to the volume renderer
+* "QCoreApplication::processEvents()" is used to allow the Busy Window to be rendered before the volume renderer is changed
+* The reason for this is that Qt updates the screen asynchronously.
+* So if this is not done first, the Busy Window will not finish rendering completely
+*
+*/
 void RenderWindow::getAlphaScale(QString line)
 {
-	qDebug() << "Slot got " << line;
 
 	bool isSuccess = false;
 	float value = line.toFloat(&isSuccess);
