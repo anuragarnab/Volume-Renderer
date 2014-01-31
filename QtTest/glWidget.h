@@ -2,6 +2,9 @@
 #define GLWIDGET_H
 
 #include <QGLWidget>
+#include <QMouseEvent>
+#include <QPoint>
+#include "TransformationManager.h"
 
 #define pIMAGEWIDTH 1
 #define pIMAGEHEIGHT 2
@@ -41,8 +44,14 @@ private:
 	float ALPHA_THRESHOLD;
 	QString DATAFILE;
 	int textureID3D;
+	QPoint lastPosition;
+	TransformationManager transManager;
 
 	void map3DTexture(float textureIndex);
+
+protected:
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 
 };
 

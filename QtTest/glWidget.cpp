@@ -19,8 +19,8 @@ QGLWidget(parent)
 glWidget::glWidget(QString filename, QWidget *parent) :
 QGLWidget(parent)
 {
-
 	parseOptions(filename);
+	
 }
 
 void glWidget::resizeGL(int width, int height){
@@ -60,13 +60,18 @@ void glWidget::paintGL(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.07f);
+	glAlphaFunc(GL_GREATER, ALPHA_THRESHOLD);
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
+
+	// Translate and make 0.5f as the center 
+	// (texture co ordinate is from 0 to 1.
+	// so center of rotation has to be 0.5f)
+	glTranslatef(0.5f, 0.5f, 0.5f);
 
 	// A scaling applied to normalize the axis 
 	// (Usually the number of slices will be less so if this is not - 
@@ -79,11 +84,25 @@ void glWidget::paintGL(){
 		1.0f*(float)IMAGEWIDTH / (float)(float)IMAGEHEIGHT,
 		(float)IMAGEWIDTH / (float)IMAGECOUNT);
 
+	/*if (IMAGECOUNT > IMAGEWIDTH)
+	{
+	glScaled((float)IMAGECOUNT / (float)IMAGEWIDTH,
+	-1.0f*(float)IMAGECOUNT / (float)(float)IMAGEHEIGHT,
+	(float)IMAGECOUNT / (float)IMAGECOUNT);
+	}*/
+
+	// Apply the user provided transformations
+	glMultMatrixd(transManager.GetMatrix());
+
+	//glRotatef(25.0f, 0.0, 1.0, 0.0);
+
+	glTranslatef(-0.5f, -0.5f, -0.5f);
+
 	glEnable(GL_TEXTURE_3D);
 	glBindTexture(GL_TEXTURE_3D, textureID3D);
 
 
-	for (float fIndx = -1.0f; fIndx <= 1.0f; fIndx += 0.003f)
+	for (float fIndx = -1.0f; fIndx <= 1.0f; fIndx += SAMPLE_STEP)
 	{
 		glBegin(GL_QUADS);
 		map3DTexture(fIndx);
@@ -259,4 +278,27 @@ bool glWidget::parseOptions(QString filename)
 		return true;
 	}
 	return false;
+}
+
+void glWidget::mousePressEvent(QMouseEvent *event)
+{
+	lastPosition = event->pos();
+	qDebug() << lastPosition;
+}
+void glWidget::mouseMoveEvent(QMouseEvent *event)
+{
+	/*lastPosition = event->pos();
+	qDebug() << lastPosition;*/
+
+	int x = event->x();
+	int y = event->y();
+
+	if (((x - lastPosition.x() != 0)) || ((y - lastPosition.y()) != 0))
+	{
+		transManager.Rotate((float)(lastPosition.y() - y), (float)(lastPosition.x() - x), 0.0f);
+		lastPosition = event->pos();
+	}
+		
+	qDebug() << "Move called";
+	updateGL();
 }
