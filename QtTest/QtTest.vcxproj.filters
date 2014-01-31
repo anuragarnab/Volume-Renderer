@@ -59,6 +59,12 @@
     <ClCompile Include="glWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_renderwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="renderwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="controlwindow.h">
@@ -68,6 +74,9 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="glWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="renderwindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
