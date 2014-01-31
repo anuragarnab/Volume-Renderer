@@ -45,6 +45,13 @@ private:
 	void computeTotalImages(void);
 	void initialiseSlider(void);
 
+	void processGrayscale(int delta, QImage * image);
+	void processBrightness(int delta, QImage * image);
+	void processBlur(int kernel, QImage * image);
+	void processSaturation(int delta, QImage * image);
+
+	void assignImage(QGraphicsScene * gScene, QImage * gImage);
+
 	public slots:
 
 	bool loadImages();

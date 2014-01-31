@@ -90,6 +90,8 @@ bool RenderWindow::loadImages(void)
 	scene->addItem(item);
 
 
+	processSaturation(35, &image);
+
 	// second pane
 	/*for (int row = 0; row < image.height(); ++row){
 		for (int col = 0; col < image.width(); ++col){
@@ -178,7 +180,7 @@ bool RenderWindow::loadImages(void)
 		}
 	}
 	*/
-
+	/*
 	QColor oldColor;
 	QColor newColor;
 	int h, s, l;
@@ -201,10 +203,8 @@ bool RenderWindow::loadImages(void)
 			image.setPixel(x, y, qRgb(newColor.red(), newColor.green(), newColor.blue()));
 		}
 	}
+	*/
 
-	scene2->clear();
-	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(image));
-	scene2->addItem(item2);
 
 	return true;
 }
@@ -360,4 +360,133 @@ void RenderWindow::initVolRenderer(QString filename)
 		volumeRenderer->loadNewFile(filename);
 	}
 	qDebug() << "Got " << filename;
+}
+
+void RenderWindow::processGrayscale(int delta, QImage * image)
+{
+	QRgb * line;
+
+	for (int y = 0; y<image->height(); ++y){
+		QRgb * line = (QRgb *)image->scanLine(y);
+
+		for (int x = 0; x<image->width(); ++x){
+			int average = (qRed(line[x]) + qGreen(line[x]) + qRed(line[x])) / 3;
+			image->setPixel(x, y, qRgb(average, average, average));
+		}
+	}
+
+	assignImage(scene2, image);
+}
+
+void RenderWindow::processBrightness(int delta, QImage * image)
+{
+	QColor oldColor;
+	int r, g, b;
+
+	for (int x = 0; x<image->width(); ++x){
+		for (int y = 0; y<image->height(); ++y){
+
+			oldColor = QColor(image->pixel(x, y));
+
+			r = oldColor.red() + delta;
+			g = oldColor.green() + delta;
+			b = oldColor.blue() + delta;
+
+			//we check if the new values are between 0 and 255
+			r = qBound(0, r, 255);
+			g = qBound(0, g, 255);
+			b = qBound(0, b, 255);
+
+			image->setPixel(x, y, qRgb(r, g, b));
+		}
+	}
+
+	assignImage(scene2, image);
+}
+
+void RenderWindow::processBlur(int kernel, QImage * image)
+{
+	int matrix[5][5] = 
+	{ { 0, 0, kernel/4, 0, 0 },
+	{ 0, kernel/4, kernel/2, kernel/4, 0 },
+	{ kernel/4, kernel/2, kernel, kernel/2, kernel/4 },
+	{ 0, kernel/4, kernel/2, kernel/4, 0 },
+	{ 0, 0, kernel/4 , 0, 0 } };
+	
+	int kernelSize = 5;
+	//int sumKernel = kernel/4 + kernel/4 + kernel/2 + kernel/4 + kernel/4 + kernel/2 + kernel + kernel/2 + kernel/4 + kernel/4 + kernel/2 + kernel/4 + kernel/4;
+	
+	int sumKernel = 0;
+	for (int row = 0; row < 5; ++row){
+		for (int col = 0; col < 5; ++col){
+			sumKernel += matrix[row][col];
+		}
+	}
+	
+	qDebug() << "Sum kernel " << sumKernel;
+
+	int r, g, b;
+	QColor color;
+
+	for (int x = kernelSize / 2; x< image->width() - (kernelSize / 2); x++){
+		for (int y = kernelSize / 2; y< image->height() - (kernelSize / 2); y++){
+
+			r = 0;
+			g = 0;
+			b = 0;
+
+			for (int i = -kernelSize / 2; i <= kernelSize / 2; i++){
+				for (int j = -kernelSize / 2; j <= kernelSize / 2; j++){
+					color = QColor(image->pixel(x + i, y + j));
+					r += color.red()*matrix[kernelSize / 2 + i][kernelSize / 2 + j];
+					g += color.green()*matrix[kernelSize / 2 + i][kernelSize / 2 + j];
+					b += color.blue()*matrix[kernelSize / 2 + i][kernelSize / 2 + j];
+				}
+			}
+
+			r = qBound(0, r / sumKernel, 255);
+			g = qBound(0, g / sumKernel, 255);
+			b = qBound(0, b / sumKernel, 255);
+
+			image->setPixel(x, y, qRgb(r, g, b));
+
+		}
+	}
+
+	assignImage(scene2, image);
+}
+
+void RenderWindow::processSaturation(int delta, QImage * image)
+{
+	QColor oldColor;
+	QColor newColor;
+	int h, s, l;
+
+	for (int x = 0; x< image->width(); x++){
+		for (int y = 0; y<image->height(); y++){
+			oldColor = QColor(image->pixel(x, y));
+
+			newColor = oldColor.toHsl();
+			h = newColor.hue();
+			s = newColor.saturation() + delta;
+			l = newColor.lightness();
+
+			//we check if the new value is between 0 and 255
+			s = qBound(0, s, 255);
+
+			newColor.setHsl(h, s, l);
+
+			image->setPixel(x, y, qRgb(newColor.red(), newColor.green(), newColor.blue()));
+		}
+	}
+
+	assignImage(scene2, image);
+}
+
+
+void RenderWindow::assignImage(QGraphicsScene * gScene, QImage * gImage)
+{
+	gScene->clear();
+	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(*gImage));
+	gScene->addItem(item2);
 }

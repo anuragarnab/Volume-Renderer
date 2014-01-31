@@ -51,8 +51,6 @@ private:
 
 	void map3DTexture(float textureIndex);
 
-
-
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
