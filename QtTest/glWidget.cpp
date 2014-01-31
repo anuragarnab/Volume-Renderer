@@ -6,7 +6,7 @@
 *	Implementation of glWidget - the OpenGL widget that performs volume rendering
 *   Subclasses QGLWidget
 */
-#include "glwidget.h"
+#include "glWidget.h"
 #include <qopenglext.h>
 #include <qfile.h>
 #include <qtextstream.h>
@@ -242,8 +242,10 @@ bool glWidget::initTexturesRaw(QString filename)
 		}
 	}
 
+#ifdef WINDOWS
 	PFNGLTEXIMAGE3DPROC glTexImage3D;
 	glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
+#endif
 
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, IMAGEWIDTH, IMAGEHEIGHT, IMAGECOUNT, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)chRGBABuffer);
@@ -293,6 +295,11 @@ QSize glWidget::minimumSizeHint() const
 {
 	return QSize(256, 256);
 	//return QSize(IMAGEWIDTH, IMAGEHEIGHT);
+}
+
+QSize glWidget::sizeHint() const
+{
+	return QSize(256, 256);
 }
 
 /*

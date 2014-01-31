@@ -1,3 +1,13 @@
+/*
+*	xmlParser.cpp
+*	Anurag Arnab
+*	30 January 2013
+*
+*	Implementation of class used to parse xml files
+*   Parses for the following elements: <name>, <description>, <parameter> and <description> tags nested within <parameter> tags
+*
+*/
+
 #include "xmlparser.h"
 
 xmlParser::xmlParser()
@@ -9,35 +19,39 @@ xmlParser::xmlParser(QString _xmlFile) : xmlFilename(_xmlFile)
 
 }
 
+/*
+*
+* Starts parsing the xml file
+* It only parses data that is enclosed with an <option> element
+*
+*/
 void xmlParser::parseXml(void) {
-	/* We'll parse the example.xml */
+
 	QFile* file = new QFile(xmlFilename);
-	/* If we can't open it, let's show an error message. */
+
 	if (!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
 		qDebug() << "Couldn't open " << xmlFilename;
 		return;
 	}
-	/* QXmlStreamReader takes any QIODevice. */
+
 	QXmlStreamReader xml(file);
 
-	/* We'll parse the XML until we reach end of it.*/
-	while (!xml.atEnd() &&
-		!xml.hasError()) {
-		/* Read next element.*/
+	while (!xml.atEnd() && !xml.hasError()) {
+
 		QXmlStreamReader::TokenType token = xml.readNext();
-		/* If token is just StartDocument, we'll go to next.*/
+
 		if (token == QXmlStreamReader::StartDocument) {
 			continue;
 		}
 
 		qDebug() << xml.tokenString();
-		/* If token is StartElement, we'll see if we can read it.*/
+
 		if (token == QXmlStreamReader::StartElement) {
-			/* If it's named options, we'll go to the next.*/
+
 			if (xml.name() == "options") {
 				continue;
 			}
-			/* If it's named option, we'll dig the information from there.*/
+
 			if (xml.name() == "option") {
 				filterOption f;
 				parseOption(xml, "option", f);
@@ -54,76 +68,11 @@ void xmlParser::parseXml(void) {
 	xml.clear();
 }
 
-void xmlParser::parseOption(QXmlStreamReader& xml) {
-	
-	int i = 0;
-	/* Let's check that we're really getting a option. */
-	if (xml.tokenType() != QXmlStreamReader::StartElement &&
-		xml.name() == "option") {
-		return;
-	}
-
-	filterOption fOption;
-
-	/* Let's get the attributes for person */
-	QXmlStreamAttributes attributes = xml.attributes();
-	/* Let's check that person has id attribute. */
-	if (attributes.hasAttribute("id")) {
-		//		/* We'll add it to the map. */
-		//		fOption.setName( attributes.value("id").toString() );
-		//	}
-		/* Next element... */
-		qDebug() << ++i << xml.tokenString();
-		xml.readNext();
-		/*
-		* We're going to loop over the things because the order might change.
-		* We'll continue the loop until we hit an EndElement named person.
-		*/
-		while (!(xml.tokenType() == QXmlStreamReader::EndElement &&
-			xml.name() == "option")) {
-			qDebug() << ++i << "Name: "<< xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
-
-
-			if (xml.tokenType() == QXmlStreamReader::StartElement) {
-
-
-				/* We've found first name. */
-				if (xml.name() == "name")
-				{
-					xml.readNext();
-					qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
-
-					if (xml.tokenType() != QXmlStreamReader::Characters) 
-					{
-						return;
-					}
-					fOption.setName(xml.text().toString());
-				}
-
-				/* We've found description. */
-				if (xml.name() == "description") 
-				{
-					xml.readNext();
-					qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
-
-					if (xml.tokenType() != QXmlStreamReader::Characters) 
-					{
-						return;
-					}
-					fOption.setDescription(xml.text().toString());
-				}
-
-
-			}
-			xml.readNext();
-		}
-	}
-
-	options.push_back(fOption);
-
-}
-
-
+/*
+*
+* Used for debugging. Displays all the parsed data
+*
+*/
 void xmlParser::dump(void)
 {
 	qDebug() << "Parsed: \n\n";
@@ -134,30 +83,33 @@ void xmlParser::dump(void)
 	}
 }
 
+/*
+*
+* Starts parsing all the data contained in one xml element
+* The parameter, pattern, indicates what that element is
+* For example, if the pattern is "option", then data between <option> and </option> will be parsed
+* The parameter fOption, indicates which filterOption object to store the parsed data in
+*
+* The function uses if statements to deal with "name", "description" and "parameter" tags since this is what
+* we are interested in parsing.
+* The function is called recursively to parse the nested data within the parameter tags
+*
+*/
 void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption& fOption) {
 
 	int i = 0;
-	/* Let's check that we're really getting a option. */
+	
+	/* Check that the correct element is received. */
 	if (xml.tokenType() != QXmlStreamReader::StartElement &&
 		xml.name() == pattern) {
 		return;
 	}
 
-	/* Let's get the attributes for person */
 	QXmlStreamAttributes attributes = xml.attributes();
-	/* Let's check that person has id attribute. */
-//	if (attributes.hasAttribute("id")) 
-//	{
-		//		/* We'll add it to the map. */
-		//		fOption.setName( attributes.value("id").toString() );
-		//	}
-		/* Next element... */
+
 		qDebug() << ++i << xml.tokenString();
 		xml.readNext();
-		/*
-		* We're going to loop over the things because the order might change.
-		* We'll continue the loop until we hit an EndElement named person.
-		*/
+
 		while (!(xml.tokenType() == QXmlStreamReader::EndElement &&
 			xml.name() == pattern)) {
 			qDebug() << ++i << "Name: " << xml.name().toString() << "Text: " << xml.text().toString() << " " << xml.tokenString();
@@ -210,28 +162,45 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption
 			xml.readNext();
 
 		}
-//	}
-
-//	options.push_back(fOption);
-
-}
+	}
 
 
+/*
+*
+* Returns the number of filters parsed
+*
+*/
 int xmlParser::getNumberFilters(void)
 {
 	return options.count();
 }
 
+/*
+*
+* Returns the name of a filter at a particular index (ie 0 = first filter etc)
+*
+*/
 QString xmlParser::getName(int index)
 {
 	return options[index].getName();
 }
 
+/*
+*
+* Returns the description of a filter at a particular index (ie 0 = first filter etc)
+*
+*/
 QString xmlParser::getDescription(int index)
 {
 	return options[index].getDescription();
 }
 
+
+/*
+*
+* Returns the parameters of a filter at a particular index (ie 0 = first filter etc)
+*
+*/
 QVector<QString> xmlParser::getParameters(int index)
 {
 	return options[index].getParameters();

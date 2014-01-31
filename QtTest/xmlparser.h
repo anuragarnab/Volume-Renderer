@@ -1,3 +1,14 @@
+/*
+*	xmlParser.cpp
+*	Anurag Arnab
+*	30 January 2013
+*
+*	Header of class used to parse xml files
+*   Parses for the following elements: <name>, <description>, <parameter> and <description> tags nested within <parameter> tags
+*
+*/
+
+
 #ifndef XMLPARSER_H
 #define XMLPARSER_H
 
@@ -23,7 +34,6 @@ private:
 	QVector <filterOption> options;
 	QString xmlFilename;
 
-	void parseOption(QXmlStreamReader &xml);
 	void parseOption(QXmlStreamReader &xml, QString pattern, filterOption& fOption);
 
 };

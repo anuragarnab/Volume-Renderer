@@ -29,11 +29,12 @@ image or a negative value to darken it</description>
     </option>
 
     <option id="5">
-        <name>Amazing filter filter</name>
+        <name>Amazing filter</name>
         <description>Creates an amazing effect</description>
         <parameters>
             <description> First param</description>
             <description> Second param</description>
         </parameters>
     </option>
+
 </options>

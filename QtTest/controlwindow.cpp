@@ -16,7 +16,7 @@
 *
 */
 ControlWindow::ControlWindow(QWidget *parent)
-: QWidget(parent), xml("config.xml")
+: QWidget(parent), xml(XML_FILE)
 {
 	xml.parseXml();
 
@@ -389,6 +389,12 @@ void ControlWindow::lineFinished(void)
 	}
 }
 
+/*
+*
+* Shows or hides the label and line edit boxes for each filter parameter
+* The filter options are parsed in from an xml file
+*
+*/
 void ControlWindow::setRenderVisibility(bool isVisible, int i)
 {
 	if (renderGrid[i] != NULL){
@@ -409,7 +415,11 @@ void ControlWindow::setRenderVisibility(bool isVisible, int i)
 	}
 }
 
-
+/*
+*
+* Returns the total number of filters that were parsed from the xml file
+*
+*/
 int ControlWindow::getNumberFilters(void)
 {
 	return xml.getNumberFilters();

@@ -64,11 +64,12 @@ QWidget(parent)
 	processingFunctions[3] = &RenderWindow::processSaturation;
 	processingFunctions[4] = &RenderWindow::processStub;
 
+	initVolRenderer("");
 
 	//loadImages();
 	setLayout(&mainLayout);
 	setWindowTitle("Rendering window");
-	setMinimumSize(400, 300);
+	setFixedSize(800, 600);
 }
 
 
@@ -243,6 +244,8 @@ void RenderWindow::initVolRenderer(QString filename)
 
 	if (volumeRenderer == NULL){
 		volumeRenderer = /*new glWidget(filename)*/ new glWidget(filePrefix, extension, paddingLength, minNo, maxNo);
+		volumeRenderer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+		volumeRenderer->setFixedHeight(256);
 		mainSplit->addWidget(volumeRenderer);
 	}
 	else{
@@ -468,8 +471,13 @@ void RenderWindow::processStub(QString parameters, QImage * image)
 */
 void RenderWindow::assignImage(QGraphicsScene * gScene, QImage * gImage)
 {
+	
+	QImage resized = gImage->scaled(imageView->width(), imageView->height()-3, Qt::AspectRatioMode::KeepAspectRatio);
+
+	qDebug() << resized.width() << " " << resized.height();
+	
 	gScene->clear();
-	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(*gImage));
+	QGraphicsPixmapItem* item2 = new QGraphicsPixmapItem(QPixmap::fromImage(resized));
 	gScene->addItem(item2);
 
 	//Calculates and returns the bounding rect of all items on the scene.
@@ -508,7 +516,6 @@ void RenderWindow::closeEvent(QCloseEvent *event)
 */
 void RenderWindow::getAlphaThresh(QString line)
 {
-	qDebug() << "Got " << line;
 	float value;
 	bool isSuccess = false;
 
