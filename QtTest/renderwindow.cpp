@@ -1,8 +1,26 @@
+/*
+*	renderwindow.cpp
+*	Anurag Arnab
+*	23 January 2013
+*
+*	Window which is the "View" in the Model-View-Controller design pattern
+*   Shows the volume rendering as well as the images
+*/
+
 #include "renderwindow.h"
 #include <QDebug>
+#include "busywindow.h"
 
 #include "glWidget.h"
+#include <QtConcurrent/QtConcurrent>
 
+/*
+*
+* Constructor.
+* A QSplitter is used to allow resizing of the Volume Renderer, and 2 Image views
+* Function pointers are also set up to the filtering functions
+*
+*/
 RenderWindow::RenderWindow(QWidget *parent) :
 QWidget(parent)
 {
@@ -20,6 +38,13 @@ QWidget(parent)
 	imageView = new QGraphicsView(scene);
 	imageView2 = new QGraphicsView(scene2);
 	imageNo = new QLabel();
+	
+	bar = new QProgressBar();
+	bar->setMinimum(0);
+	bar->setMaximum(0);
+
+	scene->addText("Loaded image");
+	scene2->addText("Filtered image");
 
 	sliderSplit = new QSplitter();
 	imageSplit = new QSplitter();
@@ -27,6 +52,9 @@ QWidget(parent)
 
 	sliderLayout.addWidget(imageSelector);
 	sliderLayout.addWidget(imageNo);
+	sliderLayout.addWidget(bar);
+
+	bar->hide();
 
 	imageSplit->addWidget(imageView);
 	imageSplit->addWidget(imageView2);
@@ -53,9 +81,15 @@ RenderWindow::~RenderWindow()
 {
 }
 
+/*
+*
+* Loads an image into the first Graphics View
+* Loads a filtered version of ths image if the option is enabled
+* The variable "currentNo" stores the current image to be displayed
+*
+*/
 bool RenderWindow::loadImages(void)
 {
-
 	QImage image;
 	image.load(getFilename(currentNo));
 
@@ -68,7 +102,6 @@ bool RenderWindow::loadImages(void)
 	QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
 	scene->addItem(item);
 
-	qDebug() << "processOption = " << processOption;
 	if (processOption > -1){
 		(this->*processingFunctions[processOption])(processParameter, &image);
 	}
@@ -76,6 +109,14 @@ bool RenderWindow::loadImages(void)
 	return true;
 }
 
+/*
+*
+* Receives filename of first image in sequence
+* It then determines the total number of images in the sequence
+* To do this, the prefix of the image is first extracted so that this can be prepended to the image number
+* The extension of the image is also determined 
+*
+*/
 void RenderWindow::initialiseImages(QString filename)
 {
 
@@ -104,15 +145,18 @@ void RenderWindow::initialiseImages(QString filename)
 		paddingLength = digits.length();
 
 		qDebug() << getFilename(currentNo);
-		qDebug() << getFilename(9);
-		qDebug() << getFilename(99);
-		qDebug() << getFilename(75);
 
 		computeTotalImages();
 		initialiseSlider();
 	}
 }
 
+/*
+*
+* Generates the filename, padding the number with as many places as the first image selected
+* For example, prefix = "test", number = 8 ----> test008 (if the first image was test001 or test002 etc)
+*
+*/
 QString RenderWindow::getFilename(int number)
 {
 	QString result = "";
@@ -123,6 +167,13 @@ QString RenderWindow::getFilename(int number)
 	return filePrefix + result.remove(0, result.length() - paddingLength) + "." + extension;
 }
 
+/*
+*
+* Determines the total number of images in the sequence
+* This is done by incrementing the number and seeing if the file exists
+* The minimum number is the number of the fist image read
+*
+*/
 void RenderWindow::computeTotalImages(void)
 {
 	maxNo = minNo;
@@ -137,6 +188,12 @@ void RenderWindow::computeTotalImages(void)
 	qDebug() << "Max number " << maxNo;
 }
 
+/*
+*
+* Initialise the slider
+* Connect its signals and slots
+*
+*/
 void RenderWindow::initialiseSlider(void)
 {
 	imageSelector->setMinimum(minNo);
@@ -150,31 +207,76 @@ void RenderWindow::initialiseSlider(void)
 	//sliderChanged(0);// Above line creates a problem in Qt 4.8
 }
 
+/*
+*
+* Slot. Called when the slider is changed
+* Updates the text box and updates the image being displayed
+*
+*/
 void RenderWindow::sliderChanged(int newNumber)
 {
-	qDebug() << newNumber;
 	currentNo = newNumber;
 	if (loadImages()){
 		imageNo->setText(QString::number(currentNo) + "/" + QString::number(maxNo));
 	}
 }
 
+/*
+*
+* Add a volume rendering widget to the window
+*
+*/
 void RenderWindow::addVolumeRenderer(glWidget * volumeRenderer)
 {
 	mainLayout.addWidget(volumeRenderer);
 }
 
+/*
+*
+* Create a new volume rendering widget and add it to the window
+*
+*/
 void RenderWindow::initVolRenderer(QString filename)
 {
+
+
+	/*imageSelector->hide();
+	bar->show();*/
+	BusyWindow b;
+	b.show();
+
+	QCoreApplication::processEvents();
+
 	if (volumeRenderer == NULL){
-		volumeRenderer = new glWidget(filename);
+		volumeRenderer = /*new glWidget(filename)*/ new glWidget(filePrefix, extension, paddingLength, minNo, maxNo);
 		mainSplit->addWidget(volumeRenderer);
 	}
 	else{
-		volumeRenderer->loadNewFile(filename);
+		//volumeRenderer->loadNewFile(filename);
+		volumeRenderer->loadNewFile(filePrefix, extension, paddingLength, minNo, maxNo);
 	}
 }
 
+void RenderWindow::initVolRendererThread(QString filename)
+{
+
+	if (volumeRenderer == NULL){
+
+		volumeRenderer = /*new glWidget(filename)*/ new glWidget(filePrefix, extension, paddingLength, minNo, maxNo);
+		mainSplit->addWidget(volumeRenderer);
+	}
+	else{
+		volumeRenderer->loadNewFile(filePrefix, extension, paddingLength, minNo, maxNo);
+	}
+}
+
+
+/*
+*
+* Slot. 
+* Gets the filtering option from the other window
+*
+*/
 void RenderWindow::getProcessOption(int number, int parameter)
 {
 	processOption = number;
@@ -182,6 +284,11 @@ void RenderWindow::getProcessOption(int number, int parameter)
 	loadImages();
 }
 
+/*
+*
+* Grayscale filter
+*
+*/
 void RenderWindow::processGrayscale(int delta, QImage * image)
 {
 	QRgb * line;
@@ -198,6 +305,13 @@ void RenderWindow::processGrayscale(int delta, QImage * image)
 	assignImage(scene2, image);
 }
 
+/*
+*
+* Brightness/Darkness filter
+* Adds the same value, delta, to the RGB channels
+* Positive value makes image brighter, negative value darkens
+*
+*/
 void RenderWindow::processBrightness(int delta, QImage * image)
 {
 	QColor oldColor;
@@ -224,6 +338,13 @@ void RenderWindow::processBrightness(int delta, QImage * image)
 	assignImage(scene2, image);
 }
 
+/*
+*
+* Blur filter
+* Uses a 5x5 matrix as its kernel
+* The parameter kernel determines the values of the matrix
+*
+*/
 void RenderWindow::processBlur(int kernel, QImage * image)
 {
 
@@ -280,6 +401,12 @@ void RenderWindow::processBlur(int kernel, QImage * image)
 	assignImage(scene2, image);
 }
 
+/*
+*
+* Saturation filter
+* Increases or decreases the saturation
+*
+*/
 void RenderWindow::processSaturation(int delta, QImage * image)
 {
 	QColor oldColor;
@@ -307,7 +434,11 @@ void RenderWindow::processSaturation(int delta, QImage * image)
 	assignImage(scene2, image);
 }
 
-
+/*
+*
+* Loads an image into the specifed graphics scene
+*
+*/
 void RenderWindow::assignImage(QGraphicsScene * gScene, QImage * gImage)
 {
 	gScene->clear();
@@ -315,11 +446,22 @@ void RenderWindow::assignImage(QGraphicsScene * gScene, QImage * gImage)
 	gScene->addItem(item2);
 }
 
+/*
+*
+* Closes the window. This slot is signalled when the rendering window closes
+*
+*/
 void RenderWindow::forceClose(void)
 {
 	close();
 }
 
+/*
+*
+* Event handler for closing the window
+* Emits a signal to force the other window to close as well
+*
+*/
 void RenderWindow::closeEvent(QCloseEvent *event)
 {
 	emit closeWindow();

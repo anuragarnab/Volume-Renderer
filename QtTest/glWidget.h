@@ -1,3 +1,12 @@
+/*
+*	glWidget.h
+*	Anurag Arnab
+*	23 January 2013
+*
+*	Header of glWidget - the OpenGL widget that performs volume rendering
+*   Subclasses QGLWidget
+*/
+
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
@@ -22,13 +31,17 @@ class glWidget : public QGLWidget
 public:
 	explicit glWidget(int width, int height, int count, QWidget *parent = 0);
 	explicit glWidget(QString filename, QWidget * parent = 0);
+	explicit glWidget(QString prefix, QString _extension, int paddingLength, int minNo, int maxNo, QWidget * parent = 0);
 
 	void resizeGL(int width, int height);
 	void initializeGL();
 	void paintGL();
 
 	QSize minimumSizeHint() const;
+
 	void loadNewFile(QString filename);
+	void loadNewFile(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo);
+
 
 signals:
 
@@ -36,7 +49,10 @@ signals:
 
 private:
 	bool initTexturesRaw(QString filename);
+	bool initTexturesFiles(void);
 	bool parseOptions(QString filename);
+
+	bool loadSuccess;
 
 	float ALPHA_SCALE;
 	int IMAGEWIDTH;
@@ -52,7 +68,14 @@ private:
 	QString lastGoodFilename;
 	QString currentFilename;
 
+	QString filePrefix;
+	QString extension;
+	int paddingLength;
+	int maxNo;
+	int minNo;
+
 	void map3DTexture(float textureIndex);
+	QString getFilename(int number);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);

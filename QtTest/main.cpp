@@ -1,3 +1,11 @@
+/*
+*	main.cpp
+*	Anurag Arnab
+*	23 January 2013
+*
+*	Driver program for the Qt based GUI
+*/
+
 #include "controlwindow.h"
 #include <QtWidgets/QApplication>
 #include "glWidget.h"

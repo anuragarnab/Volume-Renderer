@@ -1,9 +1,20 @@
+/*
+*	renderwindow.h
+*	Anurag Arnab
+*	23 January 2013
+*
+*	Window which is the "View" in the Model-View-Controller design pattern
+*   Shows the volume rendering as well as the images
+*/
+
 #ifndef RENDERWINDOW_H
 #define RENDERWINDOW_H
 
 //#include <QtGUI>       //Qt4
 #include <QtWidgets> //Qt5
 #include "glWidget.h"
+
+#include "config.h"
 
 class RenderWindow : public QWidget
 {
@@ -43,6 +54,7 @@ private:
 	QGraphicsScene * scene2;
 	QLabel * imageNo;
 	glWidget * volumeRenderer; 
+	QProgressBar * bar;
 
 	QString getFilename(int number);
 	void computeTotalImages(void);
@@ -55,7 +67,9 @@ private:
 
 	void assignImage(QGraphicsScene * gScene, QImage * gImage);
 
-	ProcessFn processingFunctions[4];
+	void initVolRendererThread(QString filename);
+
+	ProcessFn processingFunctions[N_FILTERS];
 
 public slots:
 

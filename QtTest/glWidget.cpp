@@ -12,7 +12,7 @@
 #include <qtextstream.h>
 #include <qdebug.h>
 
-
+//#include <QCoreApplication>
 /*
 *
 * Constructor. Used for debugging with default arguements
@@ -45,6 +45,9 @@ QGLWidget(parent), currentFilename(filename)
 	
 }
 
+/*
+Constructor. Loads in texture from a sequence of images
+*/
 glWidget::glWidget(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo, QWidget * parent) :
 QGLWidget(parent), filePrefix(prefix), extension(_extension), paddingLength(_paddingLength), minNo(_minNo), maxNo(_maxNo)
 {
@@ -150,7 +153,7 @@ void glWidget::paintGL(){
 		// texture mapping or by negative scaling of y axis
 
 		glScaled((float)IMAGEWIDTH / (float)IMAGEWIDTH,
-			1.0f*(float)IMAGEWIDTH / (float)(float)IMAGEHEIGHT,
+			-1.0f*(float)IMAGEWIDTH / (float)(float)IMAGEHEIGHT,
 			(float)IMAGEWIDTH / (float)IMAGECOUNT);
 
 		/*if (IMAGECOUNT > IMAGEWIDTH)
@@ -503,6 +506,9 @@ bool glWidget::initTexturesFiles(void)
 				++count;
 			}
 		}
+
+		//QCoreApplication::processEvents();
+
 	}
 
 
@@ -515,6 +521,7 @@ bool glWidget::initTexturesFiles(void)
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+//To do: #IFDEF WINDOWS
 	PFNGLTEXIMAGE3DPROC glTexImage3D;
 	glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
 
