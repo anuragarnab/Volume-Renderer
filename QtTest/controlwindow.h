@@ -24,6 +24,8 @@ public:
 	ControlWindow(QWidget *parent = 0);
 	~ControlWindow();
 
+	QLineEdit * getLineEdit(void);
+
 private:
 
 	QCommandLinkButton * uploadOCT;

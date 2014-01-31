@@ -280,13 +280,18 @@ void ControlWindow::initialiseVolumeOptions(void)
 	volumeButton = new QPushButton("Render");
 
 	grid->addWidget(label1, 0, 0);
-	grid->addWidget(lineAlphaScale, 0, 1);
+	grid->addWidget(lineAlphaThresh, 0, 1);
 	grid->addWidget(label2, 1, 0);
-	grid->addWidget(lineAlphaThresh, 1, 1);
+	grid->addWidget(lineAlphaScale, 1, 1);
 	grid->addWidget(volumeButton, 2, 1);
 
 	groupVolume->setLayout(grid);
 	volumeLayout.addWidget(groupVolume);
 
 	groupVolume->hide();
+}
+
+QLineEdit * ControlWindow::getLineEdit(void)
+{
+	return lineAlphaThresh;
 }

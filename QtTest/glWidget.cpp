@@ -553,6 +553,7 @@ QString glWidget::getFilename(int number)
 void glWidget::setAlphaThresh(float alphaThresh)
 {
 	ALPHA_THRESHOLD = alphaThresh;
+	updateGL();
 }
 
 void glWidget::setAlphaScale(float alphaScale)

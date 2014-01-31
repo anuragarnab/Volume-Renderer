@@ -460,3 +460,16 @@ void RenderWindow::closeEvent(QCloseEvent *event)
 	emit closeWindow();
 	event->accept();
 }
+
+void RenderWindow::getAlphaThresh(QString line)
+{
+	qDebug() << "Got " << line;
+	float value;
+	bool isSuccess = false;
+
+	value = line.toFloat(&isSuccess);
+
+	if (isSuccess && value >= 0.0f && value <= 1.0f && volumeRenderer != NULL){
+		volumeRenderer->setAlphaThresh(value);
+	}
+}

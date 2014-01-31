@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	QObject::connect(&w, SIGNAL(imageFilterChosen(int, int)), &r, SLOT(getProcessOption(int, int)));
 	QObject::connect(&w, SIGNAL(closeWindow(void)), &r, SLOT(forceClose(void)));
 	QObject::connect(&r, SIGNAL(closeWindow(void)), &w, SLOT(forceClose(void)));
+	QObject::connect(w.getLineEdit(), SIGNAL(textChanged(QString)), &r, SLOT(getAlphaThresh(QString)));
 
 	return a.exec();
 }

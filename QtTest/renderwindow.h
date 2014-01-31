@@ -80,6 +80,8 @@ public slots:
 
 	void forceClose(void);
 
+	void getAlphaThresh(QString line);
+
 private slots:
 
 	void sliderChanged(int newNumber);
