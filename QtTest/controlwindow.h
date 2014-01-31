@@ -49,7 +49,8 @@ private:
 	//QPushButton * volumeButton;
 
 	QRadioButton ** radioButtons;
-	QLineEdit ** filterOptions;
+//	QLineEdit ** filterOptions;
+	QGridLayout ** renderGrid;
 
 	void initialiseRenderOptions(void);
 	void initialiseVolumeOptions(void);

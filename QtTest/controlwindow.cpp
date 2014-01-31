@@ -49,7 +49,7 @@ ControlWindow::ControlWindow(QWidget *parent)
 	connect(enhanceFingerprint, SIGNAL(clicked()), this, SLOT(handleEnhanceFingerprint()));
 
 	radioButtons = new QRadioButton *[/*N_FILTERS*/ xml.getNumberFilters()];
-	filterOptions = new QLineEdit *[N_FILTERS];
+	/*filterOptions = new QLineEdit *[N_FILTERS];*/ renderGrid = new QGridLayout *[xml.getNumberFilters()];
 
 	initialiseRenderOptions();
 	initialiseVolumeOptions();
@@ -193,22 +193,29 @@ void ControlWindow::initialiseRenderOptions(void)
 
 //		filterOptions[i]->hide();
 
-//		connect(radioButtons[i], SIGNAL(toggled(bool)), this, SLOT(radioButtonToggled()));
+		connect(radioButtons[i], SIGNAL(toggled(bool)), this, SLOT(radioButtonToggled()));
 //		connect(filterOptions[i], SIGNAL(textChanged(QString)), this, SLOT(radioButtonToggled()));
 
 		
-		QVector<QString> params = xml.getParameters(i);
 		vRadioBox->addWidget(radioButtons[i]);
-		QGridLayout * grid = new QGridLayout();
+
+		QVector<QString> params = xml.getParameters(i);
+		if (params.count() > 0)
+		{
+			renderGrid[i] = new QGridLayout();
+		}
+		else{
+			renderGrid[i] = NULL;
+		}
 
 		for (int j = 0; j < params.count(); ++j)
 		{
 			//QHBoxLayout * hbox = new QHBoxLayout();
 			QLabel * label = new QLabel(params[j]);
-			/*hbox->addWidget(label);*/ grid->addWidget(label, j, 0);
+			/*hbox->addWidget(label);*/ renderGrid[i]->addWidget(label, j, 0);
 			QLineEdit * lineEdit = new QLineEdit();
-			/*hbox->addWidget(lineEdit);*/ grid->addWidget(lineEdit, j, 1);
-			/*vRadioBox->addLayout(hbox);*/ vRadioBox->addLayout(grid);
+			/*hbox->addWidget(lineEdit);*/ renderGrid[i]->addWidget(lineEdit, j, 1);
+			/*vRadioBox->addLayout(hbox);*/ vRadioBox->addLayout(renderGrid[i]);
 		}
 
 		
@@ -235,6 +242,24 @@ void ControlWindow::radioButtonToggled(void)
 		if (radioButtons[i]->isChecked()){
 			//filterOptions[i]->show();
 
+
+			if (renderGrid[i] != NULL){
+				
+				QLayoutItem *item = 0;
+				QWidget *widget = 0;
+				
+				for (int k = 0; k < renderGrid[i]->rowCount(); ++k)
+				{
+					for (int j = 0; j < renderGrid[i]->columnCount(); ++j)
+					{
+						item = renderGrid[i]->itemAtPosition(k, j);
+						widget = item ? item->widget() : 0;
+						if (widget)
+							widget->setVisible(true);
+					}
+				}
+			}
+
 			/*QString text = filterOptions[i]->text();
 			bool ok;
 
@@ -246,6 +271,23 @@ void ControlWindow::radioButtonToggled(void)
 		}
 		else{
 			//filterOptions[i]->hide();
+
+			if (renderGrid[i] != NULL){
+
+				QLayoutItem *item = 0;
+				QWidget *widget = 0;
+
+				for (int k = 0; k < renderGrid[i]->rowCount(); ++k)
+				{
+					for (int j = 0; j < renderGrid[i]->columnCount(); ++j)
+					{
+						item = renderGrid[i]->itemAtPosition(k, j);
+						widget = item ? item->widget() : 0;
+						if (widget)
+							widget->setVisible(false);
+					}
+				}
+			}
 		}
 	}
 }
@@ -260,6 +302,7 @@ void ControlWindow::closeEvent(QCloseEvent *event)
 {
 	emit closeWindow();
 	event->accept();
+
 }
 
 /*
