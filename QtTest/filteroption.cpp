@@ -44,3 +44,17 @@ void filterOption::dump(void)
 	qDebug() << "\n\n";
 }
 
+QString filterOption::getDescription(void)
+{
+	return description;
+}
+
+QString filterOption::getName(void)
+{
+	return name;
+}
+
+QVector<QString> filterOption::getParameters(void)
+{
+	return parameters;
+}

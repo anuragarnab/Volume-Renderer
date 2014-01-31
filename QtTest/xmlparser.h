@@ -13,6 +13,12 @@ public:
 	void parseXml(void);
 	void dump(void);
 
+	int getNumberFilters(void);
+
+	QString getName(int index);
+	QString getDescription(int index);
+	QVector<QString> getParameters(int index);
+
 private:
 	QVector <filterOption> options;
 	QString xmlFilename;

@@ -14,9 +14,13 @@ public:
 
 	int getNumberParameters(void);
 	QString getParameter(int index);
+	QVector<QString> getParameters(void);
 
 	void setName(QString _name);
+	QString getName(void);
+
 	void setDescription(QString _description);
+	QString getDescription(void);
 
 	void dump(void);
 

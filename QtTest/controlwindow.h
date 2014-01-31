@@ -13,6 +13,7 @@
 #include <QMainWindow>
 //#include <QtGui> // Qt4
 #include <QtWidgets> //Qt5
+#include "xmlparser.h"
 
 #include "config.h"
 
@@ -64,6 +65,7 @@ private:
 	bool textChanged;
 	bool textFinished;
 
+	xmlParser xml;
 
 protected:
 

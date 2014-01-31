@@ -206,9 +206,6 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption
 					parseOption(xml, "parameters", fOption);
 				}
 
-				
-
-
 			}
 			xml.readNext();
 
@@ -220,3 +217,22 @@ void xmlParser::parseOption(QXmlStreamReader& xml, QString pattern, filterOption
 }
 
 
+int xmlParser::getNumberFilters(void)
+{
+	return options.count();
+}
+
+QString xmlParser::getName(int index)
+{
+	return options[index].getName();
+}
+
+QString xmlParser::getDescription(int index)
+{
+	return options[index].getDescription();
+}
+
+QVector<QString> xmlParser::getParameters(int index)
+{
+	return options[index].getParameters();
+}

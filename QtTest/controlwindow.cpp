@@ -16,8 +16,10 @@
 *
 */
 ControlWindow::ControlWindow(QWidget *parent)
-: QWidget(parent)
+: QWidget(parent), xml("config.xml")
 {
+	xml.parseXml();
+
 	renderButtonHits = 0;
 	uploadHits = 0;
 	volRenderHits = 0;
@@ -46,7 +48,7 @@ ControlWindow::ControlWindow(QWidget *parent)
 	connect(computeFingerprint, SIGNAL(clicked()), this, SLOT(handleComputeFingerprint()));
 	connect(enhanceFingerprint, SIGNAL(clicked()), this, SLOT(handleEnhanceFingerprint()));
 
-	radioButtons = new QRadioButton *[N_FILTERS];
+	radioButtons = new QRadioButton *[/*N_FILTERS*/ xml.getNumberFilters()];
 	filterOptions = new QLineEdit *[N_FILTERS];
 
 	initialiseRenderOptions();
@@ -156,7 +158,7 @@ void ControlWindow::handleEnhanceFingerprint(void)
 */
 void ControlWindow::initialiseRenderOptions(void)
 {
-	groupRenderFilter = new QGroupBox("Filters");
+	/*groupRenderFilter = new QGroupBox("Filters");
 	QVBoxLayout *vRadioBox = new QVBoxLayout();
 
 	for (int i = 0; i < N_FILTERS; ++i){
@@ -170,6 +172,47 @@ void ControlWindow::initialiseRenderOptions(void)
 
 		vRadioBox->addWidget(radioButtons[i]);
 		vRadioBox->addWidget(filterOptions[i]);
+	}
+
+	groupRenderFilter->setLayout(vRadioBox);
+	renderLayout.addWidget(groupRenderFilter);
+
+	groupRenderFilter->hide();
+	*/
+
+	groupRenderFilter = new QGroupBox("Filters");
+	QVBoxLayout *vRadioBox = new QVBoxLayout();
+	xml.dump();
+	qDebug() << xml.getNumberFilters();
+
+	for (int i = 0; i < xml.getNumberFilters(); ++i){
+
+		radioButtons[i] = new QRadioButton(xml.getName(i));
+		radioButtons[i]->setToolTip(xml.getDescription(i));
+//		filterOptions[i] = new QLineEdit("Parameters");
+
+//		filterOptions[i]->hide();
+
+//		connect(radioButtons[i], SIGNAL(toggled(bool)), this, SLOT(radioButtonToggled()));
+//		connect(filterOptions[i], SIGNAL(textChanged(QString)), this, SLOT(radioButtonToggled()));
+
+		
+		QVector<QString> params = xml.getParameters(i);
+		vRadioBox->addWidget(radioButtons[i]);
+		QGridLayout * grid = new QGridLayout();
+
+		for (int j = 0; j < params.count(); ++j)
+		{
+			//QHBoxLayout * hbox = new QHBoxLayout();
+			QLabel * label = new QLabel(params[j]);
+			/*hbox->addWidget(label);*/ grid->addWidget(label, j, 0);
+			QLineEdit * lineEdit = new QLineEdit();
+			/*hbox->addWidget(lineEdit);*/ grid->addWidget(lineEdit, j, 1);
+			/*vRadioBox->addLayout(hbox);*/ vRadioBox->addLayout(grid);
+		}
+
+		
+//		vRadioBox->addWidget(filterOptions[i]);
 	}
 
 	groupRenderFilter->setLayout(vRadioBox);
@@ -190,19 +233,19 @@ void ControlWindow::radioButtonToggled(void)
 	for (int i = 0; i < N_FILTERS; ++i)
 	{
 		if (radioButtons[i]->isChecked()){
-			filterOptions[i]->show();
+			//filterOptions[i]->show();
 
-			QString text = filterOptions[i]->text();
+			/*QString text = filterOptions[i]->text();
 			bool ok;
 
 			int parameter = text.toInt(&ok);
 			if (ok){
 				emit imageFilterChosen(i, parameter);
-			}
+			}*/
 
 		}
 		else{
-			filterOptions[i]->hide();
+			//filterOptions[i]->hide();
 		}
 	}
 }

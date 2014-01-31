@@ -31,9 +31,9 @@ int main(int argc, char *argv[])
 	QObject::connect(w.getLineThreshold(), SIGNAL(textChanged(QString)), &r, SLOT(getAlphaThresh(QString)));
 	QObject::connect(&w, SIGNAL(alphaScale(QString)), &r, SLOT(getAlphaScale(QString)));
 
-	xmlParser x("config.xml");
+	/*xmlParser x("config.xml");
 	x.parseXml();
-	x.dump();
+	x.dump();*/
 
 	return a.exec();
 }
