@@ -40,6 +40,8 @@ ControlWindow::~ControlWindow()
 void ControlWindow::handleVolumeRendering(void)
 {
 	qDebug() << "Volume Rendering slot called";
+	QString fileName = QFileDialog::getOpenFileName(this, "Specify the config file for the volume renderer", QDir::currentPath());
+	emit volRendConfigFile(fileName);
 
 }
 

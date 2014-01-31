@@ -33,7 +33,7 @@ private:
 
 	void initialiseRenderOptions(void);
 
-	private slots:
+private slots:
 	void handleVolumeRendering(void);
 	void handleRenderFilter(void);
 	void handleUploadOCT(void);
@@ -44,6 +44,7 @@ private:
 
 signals:
 	void imageFilename(QString filname);
+	void volRendConfigFile(QString filename);
 
 };
 

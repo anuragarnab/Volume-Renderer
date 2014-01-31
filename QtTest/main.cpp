@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
 	r.show();
 
 	QObject::connect(&w, SIGNAL(imageFilename(QString)), &r, SLOT(initialiseImages(QString)));
+	QObject::connect(&w, SIGNAL(volRendConfigFile(QString)), &r, SLOT(initVolRenderer(QString)));
 
 /*	glWidget glw(256, 256, 109);
 //	glw.resize(256, 256);
@@ -25,9 +26,9 @@ int main(int argc, char *argv[])
 	window.setLayout(&mainLayout);
 	window.show();*/
 
-	glWidget glw (256, 256, 109);
+	/*glWidget glw (256, 256, 109);
 
-	r.addVolumeRenderer(&glw);
+	r.addVolumeRenderer(&glw);*/
 
 	return a.exec();
 }
