@@ -1,11 +1,20 @@
+/*
+*	controlwindow.h
+*	Anurag Arnab
+*	23 January 2013
+*
+*	Header for Control Window - the "Controller" in the Model-View-Control (MVC) design pattern
+*/
+
 #ifndef CONTROLWINDOW_H
 #define CONTROLWINDOW_H
 
-#define N_FILTERS 4
 
 #include <QMainWindow>
 //#include <QtGui> // Qt4
 #include <QtWidgets> //Qt5
+
+#include "config.h"
 
 class ControlWindow : public QWidget
 {

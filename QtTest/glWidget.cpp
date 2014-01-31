@@ -1,9 +1,23 @@
+/*
+*	glWidget.cpp
+*	Anurag Arnab
+*	23 January 2013
+*
+*	Implementation of glWidget - the OpenGL widget that performs volume rendering
+*   Subclasses QGLWidget
+*/
 #include "glwidget.h"
 #include <qopenglext.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdebug.h>
 
+
+/*
+*
+* Constructor. Used for debugging with default arguements
+*
+*/
 glWidget::glWidget(int width, int height, int count, QWidget *parent) :
 QGLWidget(parent)
 {
@@ -14,15 +28,53 @@ QGLWidget(parent)
 	SAMPLE_STEP = 0.003f;
 	ALPHA_THRESHOLD = 0.07f;
 	DATAFILE = "head.raw";
+
+	loadSuccess = false;
 }
 
+/*
+*
+* Constructor. Only takes in parameter of the config file
+*
+*/
 glWidget::glWidget(QString filename, QWidget *parent) :
 QGLWidget(parent), currentFilename(filename)
 {
+	loadSuccess = false;
 	parseOptions(filename);
 	
 }
 
+glWidget::glWidget(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo, QWidget * parent) :
+QGLWidget(parent), filePrefix(prefix), extension(_extension), paddingLength(_paddingLength), minNo(_minNo), maxNo(_maxNo)
+{
+	ALPHA_SCALE = 1.0f;
+	SAMPLE_STEP = 0.003f;
+	ALPHA_THRESHOLD = 0.07f;
+	DATAFILE = "head.raw";
+
+	QImage image;
+	image.load(getFilename(minNo));
+
+	if (image.isNull()){
+		qDebug() << "Could not open first image";
+	}
+
+	IMAGEWIDTH = image.width();
+	IMAGEHEIGHT = image.height();
+	IMAGECOUNT = maxNo - minNo + 1;
+
+	qDebug() << IMAGECOUNT;
+
+	loadSuccess = false;
+}
+
+/*
+*
+* Called when the widget is resized
+* Maintains the aspect ratio and sets up the orthographic projection
+*
+*/
 void glWidget::resizeGL(int width, int height){
 	
 	GLfloat dOrthoSize = 1.0f;
@@ -47,72 +99,92 @@ void glWidget::resizeGL(int width, int height){
 	glLoadIdentity();
 }
 
+/*
+*
+* Called to initialise OpenGL functions
+* Required when subclassing QGLWidget
+*
+*/
 void glWidget::initializeGL(){
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	
-	if (!initTexturesRaw(DATAFILE)){
+	if (/*!initTexturesRaw(DATAFILE)*/ !initTexturesFiles()){
 		qDebug() << "Could not load texture";
 	}
 	else{
 		lastGoodFilename = currentFilename;
+		loadSuccess = true;
 	}
 }
 
+/*
+*
+* Rendering function
+*
+*/
 void glWidget::paintGL(){
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	if (loadSuccess){
 
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, ALPHA_THRESHOLD);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, ALPHA_THRESHOLD);
 
-	// Translate and make 0.5f as the center 
-	// (texture co ordinate is from 0 to 1.
-	// so center of rotation has to be 0.5f)
-	glTranslatef(0.5f, 0.5f, 0.5f);
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
 
-	// A scaling applied to normalize the axis 
-	// (Usually the number of slices will be less so if this is not - 
-	// normalized then the z axis will look bulky)
-	// Flipping of the y axis is done by giving a negative value in y axis.
-	// This can be achieved either by changing the y co ordinates in -
-	// texture mapping or by negative scaling of y axis
+		// Translate and make 0.5f as the center 
+		// (texture co ordinate is from 0 to 1.
+		// so center of rotation has to be 0.5f)
+		glTranslatef(0.5f, 0.5f, 0.5f);
 
-	glScaled((float)IMAGEWIDTH / (float)IMAGEWIDTH,
-		1.0f*(float)IMAGEWIDTH / (float)(float)IMAGEHEIGHT,
-		(float)IMAGEWIDTH / (float)IMAGECOUNT);
+		// A scaling applied to normalize the axis 
+		// (Usually the number of slices will be less so if this is not - 
+		// normalized then the z axis will look bulky)
+		// Flipping of the y axis is done by giving a negative value in y axis.
+		// This can be achieved either by changing the y co ordinates in -
+		// texture mapping or by negative scaling of y axis
 
-	/*if (IMAGECOUNT > IMAGEWIDTH)
-	{
-	glScaled((float)IMAGECOUNT / (float)IMAGEWIDTH,
-	-1.0f*(float)IMAGECOUNT / (float)(float)IMAGEHEIGHT,
-	(float)IMAGECOUNT / (float)IMAGECOUNT);
-	}*/
+		glScaled((float)IMAGEWIDTH / (float)IMAGEWIDTH,
+			1.0f*(float)IMAGEWIDTH / (float)(float)IMAGEHEIGHT,
+			(float)IMAGEWIDTH / (float)IMAGECOUNT);
 
-	// Apply the user provided transformations
-	glMultMatrixd(transManager.GetMatrix());
+		/*if (IMAGECOUNT > IMAGEWIDTH)
+		{
+		glScaled((float)IMAGECOUNT / (float)IMAGEWIDTH,
+		-1.0f*(float)IMAGECOUNT / (float)(float)IMAGEHEIGHT,
+		(float)IMAGECOUNT / (float)IMAGECOUNT);
+		}*/
 
-	//glRotatef(25.0f, 0.0, 1.0, 0.0);
+		// Apply the user provided transformations
+		glMultMatrixd(transManager.GetMatrix());
 
-	glTranslatef(-0.5f, -0.5f, -0.5f);
+		//glRotatef(25.0f, 0.0, 1.0, 0.0);
 
-	glEnable(GL_TEXTURE_3D);
-	glBindTexture(GL_TEXTURE_3D, textureID3D);
+		glTranslatef(-0.5f, -0.5f, -0.5f);
+
+		glEnable(GL_TEXTURE_3D);
+		glBindTexture(GL_TEXTURE_3D, textureID3D);
 
 
-	for (float fIndx = -1.0f; fIndx <= 1.0f; fIndx += SAMPLE_STEP)
-	{
-		glBegin(GL_QUADS);
-		map3DTexture(fIndx);
-		glEnd();
+		for (float fIndx = -1.0f; fIndx <= 1.0f; fIndx += SAMPLE_STEP)
+		{
+			glBegin(GL_QUADS);
+			map3DTexture(fIndx);
+			glEnd();
+		}
 	}
 }
 
+/*
+*
+* Creates a 3D texture from the raw file specified by "filename"
+*
+*/
 bool glWidget::initTexturesRaw(QString filename)
 {
 
@@ -185,6 +257,11 @@ bool glWidget::initTexturesRaw(QString filename)
 	return true;
 }
 
+/*
+*
+* Maps 3D texture for rendering
+*
+*/
 void glWidget::map3DTexture(float textureIndex)
 {
 
@@ -200,12 +277,24 @@ void glWidget::map3DTexture(float textureIndex)
 	glVertex3f(-dViewPortSize, dViewPortSize, textureIndex); // bottom right corner + z index
 }
 
+/*
+*
+* Size hint ensures that Widget is created with an appropriate size
+* Without this, it is created to be very small, and is not visible even when resizing the parent window
+* It is not possible to assign variables to the width and height
+*
+*/
 QSize glWidget::minimumSizeHint() const
 {
 	return QSize(256, 256);
 	//return QSize(IMAGEWIDTH, IMAGEHEIGHT);
 }
 
+/*
+*
+* Parse the config file to set up the state of the renderer
+*
+*/
 bool glWidget::parseOptions(QString filename)
 {
 
@@ -281,12 +370,22 @@ bool glWidget::parseOptions(QString filename)
 	return false;
 }
 
-
+/*
+*
+* Captures postion of mouse on press
+*
+*/
 void glWidget::mousePressEvent(QMouseEvent *event)
 {
 	lastPosition = event->pos();
 }
 
+/*
+*
+* Triggered when mouse is dragged
+* Used to control rotation of the volume
+*
+*/
 void glWidget::mouseMoveEvent(QMouseEvent *event)
 {
 
@@ -302,6 +401,12 @@ void glWidget::mouseMoveEvent(QMouseEvent *event)
 	updateGL();
 }
 
+/*
+*
+* Loads a new data file for rendering
+* In case the new configuration file is bad, the previous one is used
+*
+*/
 void glWidget::loadNewFile(QString filename)
 {
 	parseOptions(filename);
@@ -309,11 +414,131 @@ void glWidget::loadNewFile(QString filename)
 		qDebug() << "Could not load texture";
 
 		parseOptions(lastGoodFilename);
-		initTexturesRaw(DATAFILE);
+		if (initTexturesRaw(DATAFILE)){
+			loadSuccess = true;
+		}
 	}
 	else{
 		currentFilename = filename;
 		lastGoodFilename = filename;
+		loadSuccess = true;
 	}
 	updateGL();
+}
+
+
+void glWidget::loadNewFile(QString prefix, QString _extension, int _paddingLength, int _minNo, int _maxNo)
+{
+
+	filePrefix = prefix;
+	extension = _extension;
+	paddingLength = _paddingLength;
+	minNo = _minNo;
+	maxNo = _maxNo;
+
+	QImage image;
+	image.load(getFilename(minNo));
+
+	if (image.isNull()){
+		qDebug() << "Could not open first image";
+	}
+
+	IMAGEWIDTH = image.width();
+	IMAGEHEIGHT = image.height();
+	IMAGECOUNT = maxNo - minNo + 1;
+
+	qDebug() << "Width: " << IMAGEWIDTH << "Height: " << IMAGEHEIGHT << " Count: " << IMAGECOUNT;
+
+
+	loadSuccess = initTexturesFiles();
+
+	if (!loadSuccess){
+		qDebug() << "Could not load texture";
+	}
+
+	updateGL();
+}
+
+
+bool glWidget::initTexturesFiles(void)
+{
+
+	float factor = 1.0f;
+	float gradient = (1.0f - ALPHA_SCALE) / (IMAGECOUNT - 1);
+
+	// Holds the luminance buffer
+	char* chRGBABuffer = new char[IMAGEWIDTH * IMAGEHEIGHT * IMAGECOUNT * 4];
+
+	//Only create 1 3D texture now
+	glGenTextures(1, (GLuint*)&textureID3D);
+
+	int count = 0;
+
+	// Read each frames and construct the texture
+	for (int i = minNo; i <= maxNo; ++i){
+
+		QImage image;
+		image.load(getFilename(i));
+
+		if (image.isNull()){
+			qDebug() << "Could not open " << getFilename(i);
+			return false;
+		}
+
+		for (int y = 0; y < image.height(); ++y){
+			QRgb * line = (QRgb *)image.scanLine(y);
+
+			for (int x = 0; x < image.width(); ++x){
+				char average = (char) ( (qRed(line[x]) + qGreen(line[x]) + qRed(line[x])) / 3 );
+				chRGBABuffer[count * 4] = average;
+				chRGBABuffer[count * 4 + 1] = average;
+				chRGBABuffer[count * 4 + 2] = average;
+				chRGBABuffer[count * 4 + 3] = (char)(average * factor);
+
+				if ((count % (IMAGEWIDTH * IMAGEHEIGHT) == 0) && count != 0)
+				{
+					factor = factor - gradient;
+				}
+
+				++count;
+			}
+		}
+	}
+
+
+	// Set the properties of the texture.
+	glBindTexture(GL_TEXTURE_3D, textureID3D);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	PFNGLTEXIMAGE3DPROC glTexImage3D;
+	glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
+
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, IMAGEWIDTH, IMAGEHEIGHT, IMAGECOUNT, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)chRGBABuffer);
+
+	glBindTexture(GL_TEXTURE_3D, 0);
+
+	int err = glGetError();
+	if (err > 0)
+	{
+		printf("Error %d\n", err);
+	}
+
+	delete[] chRGBABuffer;
+	return true;
+}
+
+QString glWidget::getFilename(int number)
+{
+	QString result = "";
+	for (int i = 0; i < paddingLength - 1; ++i){
+		result.append("0");
+	}
+	result = result + QString::number(number);
+	return filePrefix + result.remove(0, result.length() - paddingLength) + "." + extension;
 }
