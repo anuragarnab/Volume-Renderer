@@ -16,6 +16,7 @@ QWidget(parent)
 	maxNo = 0;
 	paddingLength = 0;
 	volumeRenderer = NULL;
+	processOption = -1;
 
 	scene = new QGraphicsScene();
 	scene2 = new QGraphicsScene();
@@ -94,7 +95,11 @@ bool RenderWindow::loadImages(void)
 	QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(image));
 	scene->addItem(item);
 
-	(this->*processingFunctions[3])(35, &image);
+	qDebug() << "processOption = " << processOption;
+	if (processOption > -1){
+		(this->*processingFunctions[processOption])(processParameter, &image);
+	}
+	//(this->*processingFunctions[3])(35, &image);
 
 	// second pane
 	/*for (int row = 0; row < image.height(); ++row){
@@ -364,6 +369,14 @@ void RenderWindow::initVolRenderer(QString filename)
 		volumeRenderer->loadNewFile(filename);
 	}
 	qDebug() << "Got " << filename;
+}
+
+void RenderWindow::getProcessOption(int number, int parameter)
+{
+	processOption = number;
+	processParameter = parameter;
+	qDebug() << "Process option =" << processOption << " Process parameter " << processParameter;
+	loadImages();
 }
 
 void RenderWindow::processGrayscale(int delta, QImage * image)

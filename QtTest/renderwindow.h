@@ -25,6 +25,8 @@ private:
 	int maxNo;
 	int minNo;
 	int paddingLength; // ie img001.png has a padding length of 3
+	int processOption;
+	int processParameter;
 
 	QVBoxLayout mainLayout;
 	QHBoxLayout imageLayout;
@@ -55,12 +57,13 @@ private:
 
 	ProcessFn processingFunctions[4];
 
-	public slots:
+public slots:
 
 	bool loadImages();
 	void initialiseImages(QString filename);
 
 	void initVolRenderer(QString filename);
+	void getProcessOption(int number, int parameter);
 
 	private slots:
 

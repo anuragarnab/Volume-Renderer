@@ -45,6 +45,7 @@ private slots:
 signals:
 	void imageFilename(QString filname);
 	void volRendConfigFile(QString filename);
+	void imageFilterChosen(int number, int paramter);
 
 };
 

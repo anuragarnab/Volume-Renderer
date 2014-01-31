@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 
 	QObject::connect(&w, SIGNAL(imageFilename(QString)), &r, SLOT(initialiseImages(QString)));
 	QObject::connect(&w, SIGNAL(volRendConfigFile(QString)), &r, SLOT(initVolRenderer(QString)));
+	QObject::connect(&w, SIGNAL(imageFilterChosen(int, int)), &r, SLOT(getProcessOption(int, int)));
 
 /*	glWidget glw(256, 256, 109);
 //	glw.resize(256, 256);

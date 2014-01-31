@@ -94,6 +94,7 @@ void ControlWindow::initialiseRenderOptions(void)
 		filterOptions[i]->hide();
 
 		connect(radioButtons[i], SIGNAL(toggled(bool)), this, SLOT(radioButtonToggled()));
+		connect(filterOptions[i], SIGNAL(textChanged(QString)), this, SLOT(radioButtonToggled()));
 
 		vRadioBox->addWidget(radioButtons[i]);
 		vRadioBox->addWidget(filterOptions[i]);
@@ -113,6 +114,8 @@ void ControlWindow::initialiseRenderOptions(void)
 * Called whenever a radio button is toggled
 * Since the radio buttons are mutually exclusive, this function is called twice each time a radio button is pressed
 * Once for the radio button being de-selected and once for the button being selected *
+
+* This function is also called when the text is changed
 * */
 void ControlWindow::radioButtonToggled(void)
 {
@@ -122,6 +125,16 @@ void ControlWindow::radioButtonToggled(void)
 	{
 		if (radioButtons[i]->isChecked()){
 			filterOptions[i]->show();
+
+			QString text = filterOptions[i]->text();
+			bool ok;
+
+			int parameter = text.toInt(&ok);
+			if (ok){
+				emit imageFilterChosen(i, parameter);
+			}
+
+			//emit radioButtonPressed(i, filterOptions[i]->);
 		}
 		else{
 			filterOptions[i]->hide();
