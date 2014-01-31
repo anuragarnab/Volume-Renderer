@@ -1,5 +1,8 @@
 #include "glwidget.h"
 #include <qopenglext.h>
+#include <qfile.h>
+#include <qtextstream.h>
+#include <qdebug.h>
 
 glWidget::glWidget(int width, int height, int count, QWidget *parent) :
 QGLWidget(parent)
@@ -7,6 +10,17 @@ QGLWidget(parent)
 	IMAGEWIDTH = width;
 	IMAGEHEIGHT = height;
 	IMAGECOUNT = count;
+	ALPHA_SCALE = 1.0f;
+	SAMPLE_STEP = 0.003f;
+	ALPHA_THRESHOLD = 0.07f;
+	DATAFILE = "head.raw";
+}
+
+glWidget::glWidget(QString filename, QWidget *parent) :
+QGLWidget(parent)
+{
+
+	parseOptions(filename);
 }
 
 void glWidget::resizeGL(int width, int height){
@@ -36,8 +50,8 @@ void glWidget::resizeGL(int width, int height){
 void glWidget::initializeGL(){
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	
-	if (!initTexturesRaw("head.raw")){
-		//qDebug() << "Could not load texture";
+	if (!initTexturesRaw(DATAFILE)){
+		qDebug() << "Could not load texture";
 	}
 }
 
@@ -79,8 +93,6 @@ void glWidget::paintGL(){
 
 bool glWidget::initTexturesRaw(QString filename)
 {
-
-	float ALPHA_SCALE = 1.0f;
 
 	float factor = 1.0f;
 	float gradient = (1.0f - ALPHA_SCALE) / (IMAGECOUNT - 1);
@@ -169,4 +181,82 @@ void glWidget::map3DTexture(float textureIndex)
 QSize glWidget::minimumSizeHint() const
 {
 	return QSize(256, 256);
+	//return QSize(IMAGEWIDTH, IMAGEHEIGHT);
+}
+
+bool glWidget::parseOptions(QString filename)
+{
+
+	int count = 0;
+	int index = -1;
+
+	QFile inputFile(filename);
+	if (inputFile.open(QIODevice::ReadOnly))
+	{
+		QTextStream in(&inputFile);
+		while (!in.atEnd())
+		{
+			QString line = in.readLine();
+			
+			if (line.length() != 0 && !line.startsWith("#")){
+
+				++count; 
+
+				switch (count)
+				{
+				case(pIMAGEWIDTH) :
+					IMAGEWIDTH = line.toInt();
+					qDebug() << "Image width: " << IMAGEWIDTH;
+					break;
+				case(pIMAGEHEIGHT) :
+					IMAGEHEIGHT = line.toInt();
+					qDebug() << "Image height: " << IMAGEHEIGHT;
+					break;
+				case(pIMAGECOUNT) :
+					IMAGECOUNT = line.toInt();
+					qDebug() << "Image count: " << IMAGECOUNT;
+					break;
+				case(pALPHA_THRESHOLD) :
+					ALPHA_THRESHOLD = line.toFloat();
+					qDebug() << "Alpha threshold: " << ALPHA_THRESHOLD;
+					break;
+				case(pSAMPLE_STEP) :
+					SAMPLE_STEP = line.toFloat();
+					qDebug() << "Sample step: " << SAMPLE_STEP;
+					break;
+				case(pDATAFILE) :
+					DATAFILE = line;
+
+					index = filename.lastIndexOf("/");
+					if (index >= 0)
+					{
+						qDebug() << filename;
+						filename = filename.remove(index + 1, filename.length()); // remove function stops at end if you specify more than it can remove
+						//filename = filename.remove(0, index+1).trimmed();
+						qDebug() << filename;
+						DATAFILE = filename + DATAFILE;
+					}
+
+					qDebug() << "Data file: " << DATAFILE;
+					break;
+				case(pALPHA_SCALE) :
+					ALPHA_SCALE = line.toFloat();
+					qDebug() << "Alpha scaling: " << ALPHA_SCALE;
+					break;
+				
+				default:
+					break;
+				}
+			}
+
+
+		}
+		inputFile.close();
+	}
+
+	if (count >= pLAST)
+	{
+		return true;
+	}
+	return false;
 }
