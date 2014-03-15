@@ -1,0 +1,29 @@
+#This file is used to configure the viewer. Lines beginning with a '#' are ignored (This can be changed in the config.h (as can the name of the configuration file). Parameters are read in consecutive order (first width, then height etc)
+#IMAGEWIDTH
+512
+#IMAGEHEIGHT
+512
+#IMAGECOUNT
+512
+#ALPHA_THRESHOLD
+0.2f
+#SAMPLE_STEP
+0.002f
+#DATAFILE
+aixz/aixz
+#RAW_OR_IMAGES 0 means a single raw input file. Any other number means a series of JPEG/PNG etc images. In this case, "Datafile" is the sequence number
+1
+#WINDOW_TITLE
+Volume Rendering
+#RESET_KEY
+8
+#ALPHA SCALING (1.0f disables it) Value indicates alpha scaling of last slice. Linear interpolation between first (1.00f) and last slice
+0.5f
+#ORTHOGRAPHIC / PERSPECTIVE (any non-zero number is ORTHOGRAPHIC, 0 is PERSPECTIVE)
+1
+#EYE_X Starting x position of the camera
+0
+#EYE_Y Starting y position of the camera
+-0.9
+#EYE_Z Starting z position of the camera
+-1.5
