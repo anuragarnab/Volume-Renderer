@@ -1,7 +1,7 @@
 /*
 *	glWidget.cpp
 *	Anurag Arnab
-*	23 January 2013
+*	23 January 2014
 *
 *	Implementation of glWidget - the OpenGL widget that performs volume rendering
 *   Subclasses QGLWidget

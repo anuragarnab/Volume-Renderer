@@ -1,7 +1,7 @@
 /*
 *	xmlParser.cpp
 *	Anurag Arnab
-*	30 January 2013
+*	30 January 2014
 *
 *	Implementation of class used to parse xml files
 *   Parses for the following elements: <name>, <description>, <parameter> and <description> tags nested within <parameter> tags

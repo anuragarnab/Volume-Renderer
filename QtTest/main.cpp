@@ -1,7 +1,7 @@
 /*
 *	main.cpp
 *	Anurag Arnab
-*	23 January 2013
+*	23 January 2014
 *
 *	Driver program for the Qt based GUI
 */

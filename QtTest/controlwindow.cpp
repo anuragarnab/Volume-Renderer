@@ -1,7 +1,7 @@
 /*
 *	controlwindow.cpp
 *	Anurag Arnab
-*	23 January 2013
+*	23 January 2014
 *
 *	Implemenation of Control Window - the "Controller" in the Model-View-Control (MVC) design pattern
 */

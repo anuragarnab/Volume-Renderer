@@ -1,7 +1,7 @@
 /*
 *	filterOption.cpp
 *	Anurag Arnab
-*	30 January 2013
+*	30 January 2014
 *
 *	Implemenation of an abstract data type used to describe the filter parameters that are parsed from an xml file
 *

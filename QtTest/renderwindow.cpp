@@ -1,7 +1,7 @@
 /*
 *	renderwindow.cpp
 *	Anurag Arnab
-*	23 January 2013
+*	23 January 2014
 *
 *	Window which is the "View" in the Model-View-Controller design pattern
 *   Shows the volume rendering as well as the images
