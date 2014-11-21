@@ -35,88 +35,90 @@ There are five options in the Control Window:
 1. Upload OCT
 ===
 
-		A dialog will open prompting the user to enter the first image file in the sequence. The program will then figure out the total number of images in the sequence. These images will then be displayed in the pane titled "Loaded image". Images can be changed using the slider on top or arrow keys on the keyboard
+A dialog will open prompting the user to enter the first image file in the sequence. The program will then figure out the total number of images in the sequence. These images will then be displayed in the pane titled "Loaded image". Images can be changed using the slider on top or arrow keys on the keyboard
 
-		Note, for images to be read in sequence, each image must end with a number. For example, if the input image is "test001.png", then the program will work out how many images exist in the range 001 to 999.
+Note, for images to be read in sequence, each image must end with a number. For example, if the input image is "test001.png", then the program will work out how many images exist in the range 001 to 999.
 
-		The program can display all images supported by Qt
+The program can display all images supported by Qt
 
 2. Render filter
 ===
 
-		Pressing this button will show a drop down menu with four selectable filters. Selecting a filter will then prompt for filter parameters. The number of filter options can easily be changed by altering "N_FILTERS" in the source file "config.h"
+	Pressing this button will show a drop down menu with four selectable filters. Selecting a filter will then prompt for filter parameters. The number of filter options can easily be changed by altering "N_FILTERS" in the source file "config.h"
 
-		Four basic filters are implemented. In order, they are Grayscale, Brightness/Darkness, Blur and Changing Saturation
+	Four basic filters are implemented. In order, they are Grayscale, Brightness/Darkness, Blur and Changing Saturation
 
-		The filters will only work on images with R, G and B channels. 
+	The filters will only work on images with R, G and B channels. 
 
 Update:
 ---
-		The various filter options can now be specified by an external xml file. By default, this file is called "config.xml", but can be changed by changing "XML_FILE" in "config.h". 
 
-		Refer to the sample xml file provided for more details on what the format of the xml file should be.
+The various filter options can now be specified by an external xml file. By default, this file is called "config.xml", but can be changed by changing "XML_FILE" in "config.h". 
 
-		To summarise, the format is as follows
+Refer to the sample xml file provided for more details on what the format of the xml file should be.
 
-		<option>
-			<option id = 1>
-				<name> Name of filter </name>
-				<description> Description of the filter </description>
-				<parameters>
-					<description> Description of parameter 1 </description>
-					<description> Description of parameter 2 </description>
-					....
-				</parameters>
-			<option>
-		</options>
+To summarise, the format is as follows
 
-		Parameters do not have to be specified if there are none
+<option>
+	<option id = 1>
+		<name> Name of filter </name>
+		<description> Description of the filter </description>
+		<parameters>
+			<description> Description of parameter 1 </description>
+			<description> Description of parameter 2 </description>
+			....
+		</parameters>
+	<option>
+</options>
+
+Parameters do not have to be specified if there are none
 
 
 Adding functionality to the filters:
 ---
 
-		This does not require having to connect any signals or slots. 
+This does not require having to connect any signals or slots. 
 
-		Firstly, one needs to define a processing function that has the signature:
+Firstly, one needs to define a processing function that has the signature:
 
-			void functionName (QString parameters, QImage * image)
+	void functionName (QString parameters, QImage * image)
 
-		where "parameters" is a space-separated string of the values which were entered into the various line-edit boxes of the filter.
+where "parameters" is a space-separated string of the values which were entered into the various line-edit boxes of the filter.
 
-		Then to link it up, the function pointer array needs to be populated with the new function. This is done in the constructor of the RenderWindow class. For example, 
+Then to link it up, the function pointer array needs to be populated with the new function. This is done in the constructor of the RenderWindow class. For example, 
 
-			"processingFunctions[4] = &RenderWindow::functionName". 
+	"processingFunctions[4] = &RenderWindow::functionName". 
 
-		The number, 4, corresponds to the fifth filter option selected by the user. Be wary to always have functions to deal with the number of possible filter options. So when the fifth radio button is clicked, or when text is entered into the line-edit widgets corresponding to the radio buttons, this function will be invoked.
+The number, 4, corresponds to the fifth filter option selected by the user. Be wary to always have functions to deal with the number of possible filter options. So when the fifth radio button is clicked, or when text is entered into the line-edit widgets corresponding to the radio buttons, this function will be invoked.
 
-		To see how this works, follow the flow of the code from "ControlWindow::initialiseRenderOptions", in "controlwindow.cpp"
+To see how this works, follow the flow of the code from "ControlWindow::initialiseRenderOptions", in "controlwindow.cpp"
 
 
 3. Volume rendering
 ===
 
-		Volume rendering will be performed based on the image slices that were selected using the 'Upload OCT' command. There are two adjustable parameters - Alpha Scaling and Alpha Threshold. For more information about this, refer to the documentation of the original volume renderer. 
+Volume rendering will be performed based on the image slices that were selected using the 'Upload OCT' command. There are two adjustable parameters - Alpha Scaling and Alpha Threshold. For more information about this, refer to the documentation of the original volume renderer. 
 
-		The volume renderer in this version of the program has been stripped down slightly by the fact that perspective projection is no longer enabled.
+The volume renderer in this version of the program has been stripped down slightly by the fact that perspective projection is no longer enabled.
 
 4. Compute 2D Fingerprint
 === 
 
-		This is just a stub. Pressing the button will print out to the console that a slot to handle this button has been called
+This is just a stub. Pressing the button will print out to the console that a slot to handle this button has been called
 
 5. Enhance Fingerprint
 ===
 
-		This is just a stub. Pressing the button will print out to the console that a slot to handle this button has been called
+This is just a stub. Pressing the button will print out to the console that a slot to handle this button has been called
 
 
 Additional Notes:
 ======
 
 Creating the Volume Renderer:
+---
 
-The glWidget (which is the volume renderer), takes a long time (up to 10 seconds), to initialise as it most generate textures from image files which must then be loaded into the graphics card's memory. 
+The glWidget (which is the volume renderer), takes a long time (up to 10 seconds), to initialise as it most generate textures fromimage files which must then be loaded into the graphics card's memory. 
 
 Whilst this is initialising, the GUI is in a "frozen" state and is not responsive to user interaction. A solution to this problem would be to create the widget in a separate thread so that the GUI thread is not interrupted. However, in this particular case, it is not possible with Qt. This is because Qt asserts that only the "GUI thread" is allowed to update the display - this includes creating the volume renderer widget. Trying to create the widget in a separate thread will result in an assertion failure. 
 
