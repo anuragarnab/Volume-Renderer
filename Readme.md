@@ -32,7 +32,7 @@ Functionality:
 
 There are five options in the Control Window:
 
-	1. Upload OCT
+1. Upload OCT
 ===
 
 		A dialog will open prompting the user to enter the first image file in the sequence. The program will then figure out the total number of images in the sequence. These images will then be displayed in the pane titled "Loaded image". Images can be changed using the slider on top or arrow keys on the keyboard
@@ -41,7 +41,7 @@ There are five options in the Control Window:
 
 		The program can display all images supported by Qt
 
-	2. Render filter
+2. Render filter
 ===
 
 		Pressing this button will show a drop down menu with four selectable filters. Selecting a filter will then prompt for filter parameters. The number of filter options can easily be changed by altering "N_FILTERS" in the source file "config.h"
@@ -50,7 +50,7 @@ There are five options in the Control Window:
 
 		The filters will only work on images with R, G and B channels. 
 
-		Update:
+Update:
 ---
 		The various filter options can now be specified by an external xml file. By default, this file is called "config.xml", but can be changed by changing "XML_FILE" in "config.h". 
 
@@ -73,7 +73,7 @@ There are five options in the Control Window:
 		Parameters do not have to be specified if there are none
 
 
-		Adding functionality to the filters:
+Adding functionality to the filters:
 ---
 
 		This does not require having to connect any signals or slots. 
@@ -93,19 +93,19 @@ There are five options in the Control Window:
 		To see how this works, follow the flow of the code from "ControlWindow::initialiseRenderOptions", in "controlwindow.cpp"
 
 
-	3. Volume rendering
+3. Volume rendering
 ===
 
 		Volume rendering will be performed based on the image slices that were selected using the 'Upload OCT' command. There are two adjustable parameters - Alpha Scaling and Alpha Threshold. For more information about this, refer to the documentation of the original volume renderer. 
 
 		The volume renderer in this version of the program has been stripped down slightly by the fact that perspective projection is no longer enabled.
 
-	4. Compute 2D Fingerprint
+4. Compute 2D Fingerprint
 === 
 
 		This is just a stub. Pressing the button will print out to the console that a slot to handle this button has been called
 
-	5. Enhance Fingerprint
+5. Enhance Fingerprint
 ===
 
 		This is just a stub. Pressing the button will print out to the console that a slot to handle this button has been called
