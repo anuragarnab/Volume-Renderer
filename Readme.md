@@ -44,11 +44,11 @@ The program can display all images supported by Qt
 2. Render filter
 ===
 
-	Pressing this button will show a drop down menu with four selectable filters. Selecting a filter will then prompt for filter parameters. The number of filter options can easily be changed by altering "N_FILTERS" in the source file "config.h"
+Pressing this button will show a drop down menu with four selectable filters. Selecting a filter will then prompt for filter parameters. The number of filter options can easily be changed by altering "N_FILTERS" in the source file "config.h"
 
-	Four basic filters are implemented. In order, they are Grayscale, Brightness/Darkness, Blur and Changing Saturation
+Four basic filters are implemented. In order, they are Grayscale, Brightness/Darkness, Blur and Changing Saturation
 
-	The filters will only work on images with R, G and B channels. 
+The filters will only work on images with R, G and B channels. 
 
 Update:
 ---
