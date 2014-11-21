@@ -59,6 +59,7 @@ Refer to the sample xml file provided for more details on what the format of the
 
 To summarise, the format is as follows
 
+```xml
 <option>
 	<option id = 1>
 		<name> Name of filter </name>
@@ -70,6 +71,7 @@ To summarise, the format is as follows
 		</parameters>
 	<option>
 </options>
+```
 
 Parameters do not have to be specified if there are none
 
